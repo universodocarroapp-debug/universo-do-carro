@@ -1,0 +1,25 @@
+# Dependências
+node_modules/
+
+# Banco de dados local (SQLite - não usar em produção)
+database.db
+
+# Variáveis de ambiente sensíveis
+.env
+.env.local
+.env.production
+
+# Uploads (arquivos de usuários)
+uploads/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+*.swp

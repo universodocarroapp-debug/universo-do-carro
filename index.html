@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#FF5A00"/>
+    <link rel="manifest" href="manifest.json"/>
+    <title>Universo do Carro - B2B & B2C SaaS platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            500: '#FF5A00',
+                            600: '#E65100',
+                        },
+                        dark: {
+                            900: '#0A0A0A',
+                            800: '#141414',
+                            700: '#1A1A1A',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #050505; 
+            color: #ffffff; 
+        }
+        
+        .hero-bg {
+            background-image: 
+                linear-gradient(to bottom, rgba(5,5,5,0.8) 0%, rgba(5,5,5,0.4) 40%, rgba(5,5,5,0.9) 100%),
+                linear-gradient(to right, rgba(5,5,5,0.9) 0%, rgba(5,5,5,0.5) 50%, rgba(5,5,5,0.8) 100%),
+                url('assets/bg-hero.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* Scrollbar customization */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0A0A0A; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #FF5A00; 
+        }
+
+        .glass-panel {
+            background: rgba(20, 20, 20, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slide-up {
+            animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .delay-100 { animation-delay: 100ms; opacity: 0; }
+        .delay-200 { animation-delay: 200ms; opacity: 0; }
+        .delay-300 { animation-delay: 300ms; opacity: 0; }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col relative overflow-x-hidden selection:bg-brand-500 selection:text-white">
+    
+    <!-- Navbar -->
+    <header class="absolute top-0 left-0 w-full z-50 py-5 px-6 md:px-12 flex items-center justify-between border-b border-white border-opacity-10 bg-gradient-to-b from-black/80 to-transparent">
+        
+        <!-- Logo -->
+        <div class="flex items-center gap-3 group cursor-pointer">
+            <div class="text-brand-500 transition-transform duration-300 group-hover:scale-110">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
+                </svg>
+            </div>
+            <div class="flex flex-col">
+                <span class="font-black text-[13px] leading-tight tracking-[0.15em] text-white">UNIVERSO</span>
+                <span class="font-bold text-[13px] leading-tight tracking-[0.1em] text-brand-500">DO CARRO</span>
+            </div>
+        </div>
+
+        
+        <!-- Auth & CTA -->
+        <div class="flex items-center gap-4 lg:gap-6">
+            <a href="login.html" class="text-sm font-semibold text-white/70 hover:text-white transition-colors hidden md:block">Entrar</a>
+            <a href="admin.html" class="border border-white/20 hover:border-white/40 hover:bg-white/5 text-white font-bold text-sm px-4 lg:px-5 py-2.5 rounded transition-all hidden md:flex items-center gap-2">
+                <svg class="w-4 h-4 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                Painel Admin
+            </a>
+            <a href="login.html" class="bg-brand-500 hover:bg-brand-600 text-black font-bold text-sm px-5 lg:px-6 py-2.5 rounded transition-all shadow-[0_4px_14px_0_rgba(255,90,0,0.39)] hover:shadow-[0_6px_20px_rgba(255,90,0,0.23)] hover:-translate-y-0.5 whitespace-nowrap">
+                Cadastrar Empresa
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Hero Content -->
+    <main class="flex-grow hero-bg pt-32 pb-24 px-6 md:px-12 flex flex-col justify-center relative min-h-screen">
+        <div class="max-w-5xl z-10 lg:pl-10">
+            
+            <!-- Badge -->
+            <div class="animate-slide-up inline-flex items-center gap-2 border border-brand-500/40 bg-dark-900/60 backdrop-blur-md rounded-sm px-3 py-1.5 mb-8">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-500 shadow-[0_0_8px_rgba(255,90,0,0.8)] animate-pulse"></span>
+                <span class="text-brand-500 text-[11px] font-bold tracking-widest uppercase">UNIVERSO DO CARRO — MARKETPLACE AUTOMOTIVO</span>
+            </div>
+            
+            <!-- Headline -->
+            <h1 class="animate-slide-up delay-100 text-6xl md:text-7xl lg:text-[5.5rem] font-black leading-[0.95] tracking-tight mb-6 uppercase text-white drop-shadow-2xl">
+                AUTOPEÇAS E<br>
+                <span class="text-brand-500 inline-block mt-2">OFICINAS</span><br>
+                <span class="inline-block mt-2">EM UM SÓ LUGAR</span>
+            </h1>
+            
+            <!-- Subtitle -->
+            <p class="animate-slide-up delay-200 text-lg md:text-xl text-white/75 max-w-2xl mb-12 font-medium leading-relaxed drop-shadow-md">
+                Marketplace especializado em autopeças e oficinas mecânicas. Conectamos motoristas, oficinas e autopeças em um único lugar.
+            </p>
+            
+            <!-- Search Component -->
+            <div class="animate-slide-up delay-300 glass-panel rounded-xl overflow-hidden shadow-2xl max-w-3xl transform transition-transform duration-300">
+                
+                <!-- Simplified Message -->
+                <div class="flex border-b border-white/10 py-8 px-6 sm:px-10 justify-center">
+                    <h3 class="text-xl md:text-2xl text-white font-medium text-center bg-dark-900/40 rounded-lg px-4 py-2 border border-brand-500/30">
+                        A peça que você procura está aqui
+                    </h3>
+                </div>
+                
+                <!-- Button -->
+                <div class="p-5 bg-dark-900/40">
+                    <a href="login.html" class="w-full bg-brand-500 hover:bg-brand-600 text-black font-bold py-4 rounded-md text-sm transition-all shadow-[0_4px_14px_0_rgba(255,90,0,0.39)] hover:shadow-[0_6px_20px_rgba(255,90,0,0.23)] flex items-center justify-center gap-2 uppercase tracking-wide cursor-pointer block text-center">
+                        <svg class="w-5 h-5 inline-block -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+                        CADASTRE-SE
+                    </a>
+                </div>
+            </div>
+            
+        </div>
+    </main>
+
+
+    
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js');
+    });
+  }
+</script>
+</body>
+</html>

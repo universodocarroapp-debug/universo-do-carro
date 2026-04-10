@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR" class="dark"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script>
+    // Trava de segurança para evitar acesso direto
+    if (localStorage.getItem('isAdmin') !== 'true') {
+        window.location.href = 'login.html';
+    }
+</script>
+<meta name="theme-color" content="#FF5A00"/>
+<link rel="manifest" href="manifest.json"/>
+<title>Universo do Carro - Painel Administrativo</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#FF5A00",
+                        "secondary": "#E63946",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#050505",
+                        slate: {
+                            800: '#141414',
+                            900: '#0A0A0A',
+                        }
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="flex flex-col min-h-screen">
+<header class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-white/5 sticky top-0 z-20 transition-all">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex items-center justify-between h-16">
+<div class="flex items-center gap-3 group cursor-pointer" onclick="window.location.href='index.html'">
+<div class="text-primary transition-transform duration-300 group-hover:scale-110">
+<svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+<path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
+</svg>
+</div>
+<div class="flex flex-col">
+<span class="font-black text-[12px] leading-tight tracking-[0.15em] text-slate-900 dark:text-white">UNIVERSO</span>
+<span class="font-bold text-[12px] leading-tight tracking-[0.1em] text-primary">DO CARRO</span>
+</div>
+<span class="bg-primary/10 text-primary border border-primary/20 text-[10px] font-bold px-2 py-0.5 rounded ml-2">ADMIN</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 hover:text-primary dark:hover:text-primary hover:bg-primary/10 rounded-full transition-colors" onclick="showToast('Notificações', 'Você não tem novas notificações.', 'success')">
+<span translate="no" class="material-symbols-outlined">notifications</span>
+</button>
+<div onclick="localStorage.removeItem('isAdmin'); window.location.href='login.html'" title="Sair / Logout" class="h-8 w-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:bg-red-500 hover:text-white transition-all shadow-sm cursor-pointer">
+                            <span translate="no" class="material-symbols-outlined" style="font-size: 16px;">logout</span>
+                        </div>
+</div>
+</div>
+</div>
+</header>
+<nav class="bg-white/50 dark:bg-[#0A0A0A] border-b border-slate-200 dark:border-white/5">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex gap-8 overflow-x-auto no-scrollbar">
+<a class="flex items-center gap-2 border-b-2 border-primary text-primary px-1 py-4 text-sm font-bold whitespace-nowrap" href="#visao-geral">
+<span translate="no" class="material-symbols-outlined text-[20px]">dashboard</span>
+                        Visão Geral
+                    </a>
+<a class="flex items-center gap-2 border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 px-1 py-4 text-sm font-medium whitespace-nowrap transition-colors" href="#usuarios">
+<span translate="no" class="material-symbols-outlined text-[20px]">group</span>
+                        Usuários
+                    </a>
+
+<a class="flex items-center gap-2 border-b-2 border-transparent text-slate-500 hover:text-primary dark:hover:text-primary px-1 py-4 text-sm font-medium whitespace-nowrap transition-colors" href="#ecossistema">
+<span translate="no" class="material-symbols-outlined text-[20px]">show_chart</span>
+                        O Ecossistema
+                    </a>
+</div>
+</div>
+</nav>
+<main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+<div id="visao-geral" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 pt-4">
+<div class="bg-white dark:bg-[#0A0A0A] p-6 rounded-xl border border-slate-200 dark:border-white/5 shadow-lg group hover:border-primary/30 transition-colors">
+<div class="flex justify-between items-start mb-4">
+<p class="text-sm font-medium text-slate-500 dark:text-slate-400">Total de Cotações</p>
+<span class="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-bold px-2 py-1 rounded-full">+5.2%</span>
+</div>
+<p class="text-3xl font-bold text-slate-900 dark:text-white">1.250</p>
+<p class="text-xs text-slate-400 mt-2">v.s. mês anterior</p>
+</div>
+<div class="bg-white dark:bg-[#0A0A0A] p-6 rounded-xl border border-slate-200 dark:border-white/5 shadow-lg group hover:border-primary/30 transition-colors">
+<div class="flex justify-between items-start mb-4">
+<p class="text-sm font-medium text-slate-500 dark:text-slate-400">Usuários Ativos</p>
+<span class="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-xs font-bold px-2 py-1 rounded-full">-2.1%</span>
+</div>
+<p class="text-3xl font-bold text-slate-900 dark:text-white">850</p>
+<p class="text-xs text-slate-400 mt-2">v.s. mês anterior</p>
+</div>
+<div class="bg-white dark:bg-[#0A0A0A] p-6 rounded-xl border border-slate-200 dark:border-white/5 shadow-lg group hover:border-primary/30 transition-colors">
+<div class="flex justify-between items-start mb-4">
+<p class="text-sm font-medium text-slate-500 dark:text-slate-400">Taxa de Crescimento</p>
+<span class="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-bold px-2 py-1 rounded-full">+12.4%</span>
+</div>
+<p class="text-3xl font-bold text-slate-900 dark:text-white">+12%</p>
+<p class="text-xs text-slate-400 mt-2">Projeção anual estável</p>
+</div>
+<div class="bg-white dark:bg-[#0A0A0A] p-6 rounded-xl border border-primary/30 shadow-[0_0_15px_rgba(255,90,0,0.1)] group hover:border-primary/50 transition-colors relative overflow-hidden">
+<div class="absolute inset-0 bg-primary/5 pointer-events-none"></div>
+<div class="relative">
+<div class="flex justify-between items-start mb-4">
+<p class="text-sm font-bold text-primary">Engajamento Oficinas</p>
+<span class="bg-primary/20 text-primary text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1"><span translate="no" class="material-symbols-outlined text-[12px]">forum</span> Alto</span>
+</div>
+<p class="text-3xl font-black text-slate-900 dark:text-white">88%</p>
+<p class="text-xs text-slate-500 mt-2 font-medium">Taxa de retorno nas cotações</p>
+</div>
+</div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 pt-2">
+    <!-- Módulo de Tráfego -->
+    <div class="lg:col-span-2 bg-white dark:bg-[#0A0A0A] p-6 rounded-xl border border-slate-200 dark:border-white/5 shadow-lg group hover:border-primary/30 transition-colors">
+        <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Monitoramento de Acessos</h3>
+                <p class="text-sm text-slate-500">Métricas de tráfego para direcionamento de marketing</p>
+            </div>
+            <select class="bg-slate-50 dark:bg-[#141414] border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 rounded-lg px-3 py-1.5 text-sm font-bold focus:outline-none focus:border-primary transition-colors cursor-pointer outline-none">
+                <option>Filtrar: Todos os Dispositivos</option>
+                <option>Apenas Mobile</option>
+                <option>Apenas Desktop</option>
+            </select>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="p-4 bg-slate-50 dark:bg-[#141414] rounded-lg border border-slate-200 dark:border-white/5 relative overflow-hidden group/card">
+                <p class="text-xs font-bold text-slate-500 mb-1 flex justify-between">DIÁRIO <span translate="no" class="material-symbols-outlined text-[14px]">today</span></p>
+                <p class="text-2xl font-black text-slate-900 dark:text-white">1.240</p>
+                <span class="text-[11px] text-green-600 dark:text-green-500 font-bold flex items-center mt-1"><span translate="no" class="material-symbols-outlined text-[14px] mr-1">trending_up</span> +5% <span class="text-slate-400 font-normal ml-1">vs. ontem</span></span>
+            </div>
+            <div class="p-4 bg-slate-50 dark:bg-[#141414] rounded-lg border border-primary/30 relative overflow-hidden shadow-[0_0_15px_rgba(255,90,0,0.1)]">
+                <div class="absolute top-0 right-0 p-1 flex">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                    </span>
+                </div>
+                <div class="absolute inset-0 bg-primary/5 pointer-events-none"></div>
+                <div class="relative">
+                    <p class="text-xs font-bold text-primary mb-1 flex justify-between">SEMANAL <span translate="no" class="material-symbols-outlined text-[14px]">date_range</span></p>
+                    <p class="text-2xl font-black text-slate-900 dark:text-white">8.650</p>
+                    <span class="text-[11px] text-green-600 dark:text-green-500 font-bold flex items-center mt-1"><span translate="no" class="material-symbols-outlined text-[14px] mr-1">trending_up</span> +12% <span class="text-slate-400 dark:text-slate-500 font-normal ml-1">em alta</span></span>
+                </div>
+            </div>
+            <div class="p-4 bg-slate-50 dark:bg-[#141414] rounded-lg border border-slate-200 dark:border-white/5 relative overflow-hidden">
+                <p class="text-xs font-bold text-slate-500 mb-1 flex justify-between">MENSAL <span translate="no" class="material-symbols-outlined text-[14px]">calendar_month</span></p>
+                <p class="text-2xl font-black text-slate-900 dark:text-white">35.400</p>
+                <span class="text-[11px] text-green-600 dark:text-green-500 font-bold flex items-center mt-1"><span translate="no" class="material-symbols-outlined text-[14px] mr-1">trending_up</span> +8% <span class="text-slate-400 font-normal ml-1">vs. mês ant.</span></span>
+            </div>
+            <div class="p-4 bg-slate-50 dark:bg-[#141414] rounded-lg border border-slate-200 dark:border-white/5 relative overflow-hidden">
+                <p class="text-xs font-bold text-slate-500 mb-1 flex justify-between">ANUAL <span translate="no" class="material-symbols-outlined text-[14px]">event_note</span></p>
+                <p class="text-2xl font-black text-slate-900 dark:text-white">420k</p>
+                <span class="text-[11px] text-green-600 dark:text-green-500 font-bold flex items-center mt-1"><span translate="no" class="material-symbols-outlined text-[14px] mr-1">trending_up</span> +24% <span class="text-slate-400 font-normal ml-1">YTD</span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Módulo de Perfil (Motoristas vs Oficinas) -->
+    <div class="bg-white dark:bg-[#0A0A0A] p-6 rounded-xl border border-slate-200 dark:border-white/5 shadow-lg group hover:border-primary/30 transition-colors">
+        <div class="mb-5 flex justify-between items-start">
+            <div>
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Perfil do Público</h3>
+                <p class="text-xs text-slate-500 mt-1">Quem acessa a plataforma</p>
+            </div>
+            <span translate="no" class="material-symbols-outlined text-slate-400">pie_chart</span>
+        </div>
+        
+        <div class="space-y-5">
+            <!-- Oficinas Mecânicas -->
+            <div class="group/bar cursor-default">
+                <div class="flex justify-between items-end mb-1">
+                    <span class="text-sm font-bold text-slate-800 dark:text-slate-200 group-hover/bar:text-primary transition-colors">Oficinas Mecânicas</span>
+                    <span class="text-sm font-black text-primary">55%</span>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-[#141414] rounded-full h-2.5 overflow-hidden">
+                    <div class="bg-primary h-2.5 rounded-full shadow-[0_0_10px_rgba(255,90,0,0.8)] relative" style="width: 55%">
+                        <div class="absolute inset-0 bg-white/20"></div>
+                    </div>
+                </div>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 font-medium">Liderança em cotações ativas</p>
+            </div>
+            
+            <!-- Motoristas -->
+            <div class="group/bar cursor-default">
+                <div class="flex justify-between items-end mb-1">
+                    <span class="text-sm font-bold text-slate-800 dark:text-slate-200 group-hover/bar:text-[#E63946] transition-colors">Motoristas (PF / Frota)</span>
+                    <span class="text-sm font-black text-[#E63946]">30%</span>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-[#141414] rounded-full h-2.5 overflow-hidden">
+                    <div class="bg-[#E63946] h-2.5 rounded-full shadow-[0_0_10px_rgba(230,57,70,0.6)]" style="width: 30%"></div>
+                </div>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 font-medium">Busca direta por peças avulsas</p>
+            </div>
+
+            <!-- Autopeças -->
+            <div class="group/bar cursor-default">
+                <div class="flex justify-between items-end mb-1">
+                    <span class="text-sm font-bold text-slate-800 dark:text-slate-200 group-hover/bar:text-slate-400 transition-colors">Lojas de Autopeças</span>
+                    <span class="text-sm font-black text-slate-500 dark:text-slate-300">15%</span>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-[#141414] rounded-full h-2.5 overflow-hidden">
+                    <div class="bg-slate-400 h-2.5 rounded-full" style="width: 15%"></div>
+                </div>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 font-medium">Vendedores acompanhando painel</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 gap-8 mb-8">
+<div class="bg-white dark:bg-[#0A0A0A] p-6 rounded-xl border border-slate-200 dark:border-white/5 shadow-lg group hover:border-primary/30 transition-colors flex flex-col justify-between">
+<div class="mb-6 flex justify-between items-start">
+<div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Desempenho de Lojistas (ROI)</h3>
+<p class="text-sm text-slate-500 mt-1">Gargalo de conversão e justificativa de investimento</p>
+</div>
+<button onclick="showToast('Relatório', 'Gerando relatório PDF de performance para o lojista...', 'success')" class="text-primary hover:text-[#E65100] transition-colors p-1" title="Gerar Relatório para Lojistas">
+<span translate="no" class="material-symbols-outlined">download</span>
+</button>
+</div>
+
+<div class="grid grid-cols-2 gap-4 mb-6">
+<div class="p-4 bg-slate-50 dark:bg-[#141414] rounded-lg border border-slate-200 dark:border-white/5 border-l-4 border-l-blue-500">
+<p class="text-xs text-slate-500 font-bold mb-1">Demandas Entregues</p>
+<p class="text-2xl font-black text-slate-900 dark:text-white">4.500</p>
+<p class="text-[10px] text-slate-400 mt-1">Leads gerados pela plat.</p>
+</div>
+<div class="p-4 bg-[#E63946]/5 rounded-lg border border-[#E63946]/20 border-l-4 border-l-[#E63946] relative overflow-hidden">
+<p class="text-xs text-[#E63946] font-bold mb-1">Sem Resposta Cotação</p>
+<p class="text-2xl font-black text-slate-900 dark:text-white">1.215 <span class="text-[11px] text-[#E63946] font-bold ml-1">(27%)</span></p>
+<p class="text-[10px] text-red-400 mt-1">Perdidos pelo lojista</p>
+</div>
+</div>
+
+<!-- Funil B2B -->
+<div class="space-y-4">
+<div>
+<div class="flex justify-between items-end mb-1">
+<span class="text-sm font-bold text-slate-700 dark:text-slate-300">1. Oportunidades Entregues ao Lojista</span>
+<span class="text-sm font-bold text-blue-500">100%</span>
+</div>
+<div class="w-full bg-slate-200 dark:bg-[#141414] rounded-full h-2">
+<div class="bg-blue-500 h-2 rounded-full" style="width: 100%"></div>
+</div>
+</div>
+
+<div>
+<div class="flex justify-between items-end mb-1">
+<span class="text-sm font-bold text-slate-700 dark:text-slate-300">2. Cotações Respondidas Feitas</span>
+<span class="text-sm font-bold text-primary">73%</span>
+</div>
+<div class="w-full bg-slate-200 dark:bg-[#141414] rounded-full h-2">
+<div class="bg-primary h-2 rounded-full shadow-[0_0_8px_rgba(255,90,0,0.5)]" style="width: 73%"></div>
+</div>
+</div>
+
+<div>
+<div class="flex justify-between items-end mb-1">
+<span class="text-sm font-bold text-slate-700 dark:text-slate-300">3. Vendas Fechadas (Estimativa Real)</span>
+<span class="text-sm font-bold text-green-500">22%</span>
+</div>
+<div class="w-full bg-slate-200 dark:bg-[#141414] rounded-full h-2">
+<div class="bg-green-500 h-2 rounded-full" style="width: 22%"></div>
+</div>
+</div>
+</div>
+
+<div class="mt-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg flex items-start gap-3">
+<span translate="no" class="material-symbols-outlined text-red-500 text-[20px] mt-0.5">warning</span>
+<div>
+<p class="text-[11px] font-bold text-red-600 dark:text-red-400 tracking-wide uppercase">Defasagem na Gestão do Lojista</p>
+<p class="text-[11px] text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">Mostre que o seu sistema entrega o cliente, mas há uma falha humana da loja que está ignorando <strong class="text-[#E63946]">27% das cotações</strong>. <br>A responsabilidade pela perda não é da plataforma.</p>
+</div>
+</div>
+</div>
+
+</div>
+<div id="usuarios" class="bg-white dark:bg-[#0A0A0A] rounded-xl border border-slate-200 dark:border-white/5 shadow-lg overflow-hidden group hover:border-primary/30 transition-colors scroll-mt-24">
+<div class="p-6 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+<div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Gerenciamento de Usuários</h3>
+<p class="text-sm text-slate-500">Visualize e gerencie os usuários do sistema</p>
+</div>
+<div class="flex gap-3 w-full sm:w-auto">
+<div class="relative flex-grow sm:flex-grow-0">
+<span translate="no" class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
+<input class="pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg text-sm w-full focus:ring-primary focus:border-primary" placeholder="Buscar usuário..." type="text"/>
+</div>
+<select onchange="showToast('Filtro Aplicado', 'Atualizando tabela de acordo com a campanha selecionada...', 'success')" class="bg-primary/10 border border-primary/40 text-primary dark:bg-primary/10 dark:text-primary rounded-lg text-sm font-bold focus:ring-primary focus:border-primary px-3 py-2 shadow-[0_4px_15px_rgba(255,90,0,0.2)] outline-none cursor-pointer hover:bg-primary/20 transition-colors w-full sm:w-auto">
+<option value="todos" class="text-slate-900">Filtro: Todos Registros</option>
+<option value="campanha100" class="text-slate-900 font-bold" selected>🏆 Campanha 100 Primeiros (24 Meses Isentos)</option>
+<option value="pagantes" class="text-slate-900">Cadastros Pagantes (Mensalidade Ativa)</option>
+</select>
+</div>
+</div>
+</div>
+
+<!-- Métricas de Categorias de Usuários -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 pb-2 border-b border-slate-200 dark:border-slate-800">
+    <div class="bg-slate-50 dark:bg-[#141414] p-4 rounded-xl border border-primary/30 flex items-center justify-between shadow-[0_0_15px_rgba(255,90,0,0.1)]">
+        <div>
+            <p class="text-xs font-bold text-primary uppercase tracking-wider mb-1">Lojas de Autopeças</p>
+            <p class="text-2xl font-black text-primary" id="count-lojas">0</p>
+        </div>
+        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+            <span translate="no" class="material-symbols-outlined">storefront</span>
+        </div>
+    </div>
+    <div class="bg-slate-50 dark:bg-[#141414] p-4 rounded-xl border border-slate-200 dark:border-white/5 flex items-center justify-between">
+        <div>
+            <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Oficinas Mecânicas</p>
+            <p class="text-2xl font-black text-blue-500" id="count-oficinas">0</p>
+        </div>
+        <div class="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500">
+            <span translate="no" class="material-symbols-outlined">build</span>
+        </div>
+    </div>
+    <div class="bg-slate-50 dark:bg-[#141414] p-4 rounded-xl border border-slate-200 dark:border-white/5 flex items-center justify-between">
+        <div>
+            <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Motoristas (PF)</p>
+            <p class="text-2xl font-black text-[#E63946]" id="count-motoristas">0</p>
+        </div>
+        <div class="w-10 h-10 rounded-full bg-[#E63946]/10 flex items-center justify-center text-[#E63946]">
+            <span translate="no" class="material-symbols-outlined">directions_car</span>
+        </div>
+    </div>
+</div>
+
+<!-- Navegação de Classes de Usuário -->
+<div class="flex border-b border-slate-200 dark:border-slate-800 px-6 pt-2 overflow-x-auto no-scrollbar gap-8">
+<button onclick="filterUsers('todos', this)" class="tab-btn px-2 py-4 text-sm font-bold text-primary border-b-2 border-primary flex items-center gap-2 whitespace-nowrap"><span translate="no" class="material-symbols-outlined text-[18px]">list</span> Todos</button>
+<button onclick="filterUsers('Autopeças', this)" class="tab-btn px-2 py-4 text-sm font-bold text-slate-500 hover:text-slate-300 border-b-2 border-transparent flex items-center gap-2 whitespace-nowrap transition-colors"><span translate="no" class="material-symbols-outlined text-[18px]">storefront</span> Lojas de Autopeças</button>
+<button onclick="filterUsers('Oficina Mecânica', this)" class="tab-btn px-2 py-4 text-sm font-bold text-slate-500 hover:text-slate-300 border-b-2 border-transparent flex items-center gap-2 whitespace-nowrap transition-colors"><span translate="no" class="material-symbols-outlined text-[18px]">build</span> Oficinas Mecânicas</button>
+<button onclick="filterUsers('Motorista', this)" class="tab-btn px-2 py-4 text-sm font-bold text-slate-500 hover:text-slate-300 border-b-2 border-transparent flex items-center gap-2 whitespace-nowrap transition-colors"><span translate="no" class="material-symbols-outlined text-[18px]">directions_car</span> Motoristas (PF)</button>
+</div>
+<div class="overflow-x-auto bg-slate-50/20 dark:bg-slate-900/10">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-slate-50 dark:bg-slate-800/50">
+<th class="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Usuário</th>
+<th class="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Cargo</th>
+<th class="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+<th class="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Desempenho / Info</th>
+<th class="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Data de Cadastro</th>
+<th class="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Ações</th>
+</tr>
+</thead>
+<tbody id="users-tbody" class="divide-y divide-slate-200 dark:divide-slate-800">
+    <!-- Dinâmico -->
+</tbody>
+</table>
+</div>
+<div class="p-4 border-t border-slate-200 dark:border-slate-800 flex justify-center">
+<nav class="flex items-center gap-2">
+<button class="p-2 border border-slate-200 dark:border-slate-800 rounded hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50" disabled="">
+<span translate="no" class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center bg-primary text-white rounded font-bold text-sm">1</button>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 rounded font-medium text-sm">2</button>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 rounded font-medium text-sm">3</button>
+<button class="p-2 border border-slate-200 dark:border-slate-800 rounded hover:bg-slate-50 dark:hover:bg-slate-800">
+<span translate="no" class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</nav>
+</div>
+</div>
+<div id="ecossistema" class="mt-8 bg-white dark:bg-[#0A0A0A] p-6 rounded-xl border border-slate-200 dark:border-white/5 shadow-lg group hover:border-primary/30 transition-colors scroll-mt-24">
+<div class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+<div>
+<h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2"><span translate="no" class="material-symbols-outlined text-primary">ssid_chart</span> Evolução do Ecossistema SaaS</h3>
+<p class="text-sm text-slate-500 mt-1">Crescimento da tríade B2B x B2C na plataforma (Últimos 6 meses)</p>
+</div>
+<div class="flex gap-4 bg-slate-50 dark:bg-slate-900 px-4 py-2 rounded-lg border border-slate-200 dark:border-white/5">
+<div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-primary shadow-[0_0_10px_rgba(255,90,0,0.8)]"></div><span class="text-xs font-bold text-slate-700 dark:text-slate-300">Autopeças</span></div>
+<div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-blue-500"></div><span class="text-xs font-bold text-slate-700 dark:text-slate-300">Oficinas</span></div>
+<div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-[#E63946]"></div><span class="text-xs font-bold text-slate-700 dark:text-slate-300">Motoristas</span></div>
+</div>
+</div>
+<!-- Gráfico de Crescimento -->
+<div class="relative h-[250px] w-full mt-4 border-b border-l border-slate-200 dark:border-slate-800 flex items-end justify-between px-2 pt-4 pb-0">
+<!-- Background lines -->
+<div class="absolute inset-0 flex flex-col justify-between border-b border-white/5 pointer-events-none">
+<div class="border-t border-dashed border-slate-200 dark:border-white/5 w-full h-0"></div>
+<div class="border-t border-dashed border-slate-200 dark:border-white/5 w-full h-0"></div>
+<div class="border-t border-dashed border-slate-200 dark:border-white/5 w-full h-0"></div>
+<div class="border-t border-dashed border-slate-200 dark:border-white/5 w-full h-0"></div>
+</div>
+<div class="w-1/6 flex justify-center gap-1.5 group/bar relative z-10 cursor-crosshair">
+<div class="w-4 sm:w-8 bg-[#E63946]/30 hover:bg-[#E63946] rounded-t h-[20%] transition-all" title="Motoristas"></div>
+<div class="w-4 sm:w-8 bg-blue-500/30 hover:bg-blue-500 rounded-t h-[30%] transition-all" title="Oficinas"></div>
+<div class="w-4 sm:w-8 bg-primary/30 hover:bg-primary rounded-t h-[10%] transition-all hover:shadow-[0_0_15px_rgba(255,90,0,0.6)]" title="Lojas"></div>
+</div>
+<div class="w-1/6 flex justify-center gap-1.5 group/bar relative z-10 cursor-crosshair">
+<div class="w-4 sm:w-8 bg-[#E63946]/40 hover:bg-[#E63946] rounded-t h-[35%] transition-all"></div>
+<div class="w-4 sm:w-8 bg-blue-500/40 hover:bg-blue-500 rounded-t h-[40%] transition-all"></div>
+<div class="w-4 sm:w-8 bg-primary/40 hover:bg-primary rounded-t h-[15%] transition-all hover:shadow-[0_0_15px_rgba(255,90,0,0.6)]"></div>
+</div>
+<div class="w-1/6 flex justify-center gap-1.5 group/bar relative z-10 cursor-crosshair">
+<div class="w-4 sm:w-8 bg-[#E63946]/50 hover:bg-[#E63946] rounded-t h-[50%] transition-all"></div>
+<div class="w-4 sm:w-8 bg-blue-500/50 hover:bg-blue-500 rounded-t h-[45%] transition-all"></div>
+<div class="w-4 sm:w-8 bg-primary/50 hover:bg-primary rounded-t h-[30%] transition-all hover:shadow-[0_0_15px_rgba(255,90,0,0.6)]"></div>
+</div>
+<div class="w-1/6 flex justify-center gap-1.5 group/bar relative z-10 cursor-crosshair">
+<div class="w-4 sm:w-8 bg-[#E63946]/70 hover:bg-[#E63946] rounded-t h-[65%] transition-all"></div>
+<div class="w-4 sm:w-8 bg-blue-500/70 hover:bg-blue-500 rounded-t h-[60%] transition-all"></div>
+<div class="w-4 sm:w-8 bg-primary/70 hover:bg-primary rounded-t h-[50%] transition-all hover:shadow-[0_0_15px_rgba(255,90,0,0.6)]"></div>
+</div>
+<div class="w-1/6 flex justify-center gap-1.5 group/bar relative z-10 cursor-crosshair">
+<div class="w-4 sm:w-8 bg-[#E63946]/80 hover:bg-[#E63946] rounded-t h-[80%] transition-all"></div>
+<div class="w-4 sm:w-8 bg-blue-500/80 hover:bg-blue-500 rounded-t h-[75%] transition-all"></div>
+<div class="w-4 sm:w-8 bg-primary/80 hover:bg-primary rounded-t h-[70%] transition-all hover:shadow-[0_0_15px_rgba(255,90,0,0.6)]"></div>
+</div>
+<div class="w-1/6 flex justify-center gap-1.5 group/bar relative z-10 cursor-crosshair">
+<div class="w-4 sm:w-8 bg-[#E63946] rounded-t h-[100%] shadow-[0_0_10px_rgba(230,57,70,0.4)] hover:opacity-80 transition-all"></div>
+<div class="w-4 sm:w-8 bg-blue-500 rounded-t h-[85%] shadow-[0_0_10px_rgba(59,130,246,0.4)] hover:opacity-80 transition-all"></div>
+<div class="w-4 sm:w-8 bg-primary rounded-t h-[80%] shadow-[0_0_15px_rgba(255,90,0,0.6)] hover:opacity-80 transition-all"></div>
+</div>
+</div>
+<div class="flex justify-between mt-3 px-8 text-xs font-bold text-slate-500">
+<span>Jan</span><span>Fev</span><span>Mar</span><span>Abr</span><span>Mai</span><span>Jun</span>
+</div>
+</div>
+</main>
+<footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-6">
+<div class="max-w-7xl mx-auto px-4 text-center">
+<p class="text-xs text-slate-500">© 2024 Universo do Carro SaaS. Todos os direitos reservados.</p>
+</div>
+</footer>
+<div class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex items-center justify-around py-3 px-4 z-50">
+<a class="flex flex-col items-center text-primary" href="#">
+<span translate="no" class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-bold mt-1">Geral</span>
+</a>
+<a class="flex flex-col items-center text-slate-500" href="#">
+<span translate="no" class="material-symbols-outlined">group</span>
+<span class="text-[10px] font-bold mt-1">Usuários</span>
+</a>
+<a class="flex flex-col items-center text-slate-500" href="#">
+<span translate="no" class="material-symbols-outlined">storefront</span>
+<span class="text-[10px] font-bold mt-1">Lojas</span>
+</a>
+<a class="flex flex-col items-center text-slate-500" href="#">
+<span translate="no" class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-bold mt-1">Ajustes</span>
+</a>
+</div>
+</div>
+
+<!-- Modal Genérico Interativo -->
+<div id="generic-modal" class="fixed inset-0 z-[100] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeModal()"></div>
+    <div class="relative bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-white/10 shadow-2xl rounded-xl w-11/12 max-w-lg p-6 transform scale-95 transition-transform duration-300" id="modal-content">
+        <div class="flex justify-between items-center mb-4">
+            <h3 id="modal-title" class="text-xl font-bold text-slate-900 dark:text-white">Ação</h3>
+            <button onclick="closeModal()" class="text-slate-400 hover:text-white transition-colors">
+                <span translate="no" class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <p class="text-slate-500 dark:text-slate-400 text-sm mb-6">Preencha os dados abaixo corretamente.</p>
+        
+        <div class="space-y-4 mb-8">
+            <div>
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nome / Título</label>
+                <input type="text" class="w-full bg-slate-50 dark:bg-[#141414] border border-slate-200 dark:border-white/5 rounded-lg px-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" placeholder="Digite aqui...">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email / Contato</label>
+                <input type="email" class="w-full bg-slate-50 dark:bg-[#141414] border border-slate-200 dark:border-white/5 rounded-lg px-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" placeholder="email@exemplo.com">
+            </div>
+        </div>
+        
+        <div class="flex justify-end gap-3">
+            <button onclick="closeModal()" class="px-4 py-2 rounded-lg text-sm font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">Cancelar</button>
+            <button onclick="submitModal()" class="bg-primary hover:bg-[#E65100] text-black px-6 py-2 rounded-lg text-sm font-bold shadow-[0_4px_14px_0_rgba(255,90,0,0.39)] hover:shadow-[0_6px_20px_rgba(255,90,0,0.23)] hover:-translate-y-0.5 transition-all">Salvar Dados</button>
+        </div>
+    </div>
+</div>
+
+<div id="toast-container"></div>
+<script>
+    /* User Table Filter System */
+    function filterUsers(role, btn) {
+        const tabs = document.querySelectorAll('.tab-btn');
+        tabs.forEach(t => {
+            t.classList.remove('text-primary', 'border-primary');
+            t.classList.add('text-slate-500', 'border-transparent');
+        });
+        btn.classList.remove('text-slate-500', 'border-transparent');
+        btn.classList.add('text-primary', 'border-primary');
+
+        const rows = document.querySelectorAll('.user-row');
+        rows.forEach(row => {
+            if(role === 'todos' || row.dataset.role === role) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+        showToast('Filtro Aplicado', `Mostrando ${role === 'todos' ? 'todos os usuários' : role}.`, 'success');
+    }
+
+    /* Modal Interaction System */
+    function openModal(title) {
+        document.getElementById('modal-title').innerText = title;
+        const modal = document.getElementById('generic-modal');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            document.getElementById('modal-content').classList.remove('scale-95');
+            document.getElementById('modal-content').classList.add('scale-100');
+        }, 10);
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('generic-modal');
+        modal.classList.add('opacity-0');
+        document.getElementById('modal-content').classList.remove('scale-100');
+        document.getElementById('modal-content').classList.add('scale-95');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+
+    function submitModal() {
+        closeModal();
+        setTimeout(() => {
+            showToast('Sucesso', 'Ação realizada com sucesso. Os dados foram salvos.', 'success');
+        }, 300);
+    }
+
+    /* Toast Notifications System - Tailwind Version */
+    function showToast(title, message, type = 'success') {
+        let container = document.getElementById('toast-container');
+        if(!container) {
+            container = document.createElement('div');
+            container.id = 'toast-container';
+            container.className = 'fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none';
+            document.body.appendChild(container);
+        }
+        
+        const toast = document.createElement('div');
+        toast.className = `p-4 rounded-xl shadow-lg transform translate-x-full opacity-0 transition-all duration-300 flex items-start gap-3 w-80 pointer-events-auto border backdrop-blur-md ${type === 'success' ? 'bg-green-50/90 dark:bg-green-900/40 border-green-200 dark:border-green-800 text-green-800 dark:text-green-300' : 'bg-red-50/90 dark:bg-red-900/40 border-red-200 dark:border-red-800 text-red-800 dark:text-red-300'}`;
+        
+        const icon = type === 'success' ? 'check_circle' : 'warning';
+        
+        toast.innerHTML = `
+            <span translate="no" class="material-symbols-outlined mt-0.5">${icon}</span>
+            <div class="flex-1">
+                <h4 class="text-sm font-bold">${title}</h4>
+                <p class="text-xs mt-1 opacity-90">${message}</p>
+            </div>
+            <button class="opacity-70 hover:opacity-100" onclick="this.parentElement.remove()">
+                <span translate="no" class="material-symbols-outlined text-[18px]">close</span>
+            </button>
+        `;
+        
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.classList.remove('translate-x-full', 'opacity-0');
+        }, 50);
+        
+        setTimeout(() => {
+            toast.classList.add('translate-x-full', 'opacity-0');
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
+    }
+    /* Carregar dados da API ao iniciar */
+    async function carregarUsuarios() {
+        try {
+            const res = await fetch('/api/users');
+            const data = await res.json();
+            if (data.users) {
+                renderUsuarios(data.users);
+            }
+        } catch(e) {
+            console.error('Erro ao buscar usuários', e);
+        }
+    }
+
+    function renderUsuarios(users) {
+        const tbody = document.getElementById('users-tbody');
+        tbody.innerHTML = '';
+        
+        let cxLojas = 0, cxOficinas = 0, cxMotoristas = 0;
+
+        users.forEach(user => {
+            let roleTxt = user.role;
+            if (user.role === 'empresa') {
+                if (user.tipo_empresa === 'oficina') {
+                    roleTxt = 'Oficina Mecânica';
+                    cxOficinas++;
+                } else {
+                    roleTxt = 'Autopeças';
+                    cxLojas++;
+                }
+            } else if (user.role === 'motorista') {
+                roleTxt = 'Motorista';
+                cxMotoristas++;
+            } else {
+                roleTxt = user.role;
+            }
+
+            const dataRow = document.createElement('tr');
+            dataRow.className = 'user-row';
+            dataRow.dataset.role = roleTxt; // ou adaptar
+            
+            const initials = user.name ? user.name.substring(0,2).toUpperCase() : 'US';
+            const dataIso = new Date(user.created_at).toLocaleDateString('pt-BR');
+            const statusClass = user.status === 'Ativo' ? 'bg-green-100/50 text-green-700 dark:bg-green-900/30 dark:text-green-400 border-green-200' : 'bg-slate-100/50 text-slate-600 dark:bg-slate-800/50 dark:text-slate-400 border-slate-200';
+
+            dataRow.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-xs font-bold text-slate-700 dark:text-slate-300">${initials}</div>
+                        <div>
+                            <p class="text-sm font-bold text-slate-900 dark:text-white">${user.name}</p>
+                            <p class="text-xs text-slate-500">${user.email}</p>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-700 dark:text-slate-300 capitalize">${roleTxt}</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 py-1 text-[10px] font-bold uppercase rounded-full border ${statusClass}">${user.status || 'Ativo'}</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="text-xs font-bold text-primary flex items-center gap-1"><span translate="no" class="material-symbols-outlined text-[16px]">info</span> Nova Conta</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">${dataIso}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-right">
+                    <div class="flex justify-end gap-1.5">
+                        <button onclick="openModal('Editar Permissões: ${user.name}')" class="p-1.5 text-slate-400 hover:text-white hover:bg-primary/80 rounded-lg transition-colors" title="Editar Usuário"><span translate="no" class="material-symbols-outlined text-[18px]">edit</span></button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(dataRow);
+        });
+
+        // Preenche os contadores visuais
+        if (document.getElementById('count-lojas')) document.getElementById('count-lojas').innerText = cxLojas;
+        if (document.getElementById('count-oficinas')) document.getElementById('count-oficinas').innerText = cxOficinas;
+        if (document.getElementById('count-motoristas')) document.getElementById('count-motoristas').innerText = cxMotoristas;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        carregarUsuarios();
+    });
+</script>
+</div>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js');
+    });
+  }
+</script>
+</body></html>

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="pt-br" class="dark"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta name="theme-color" content="#FF5A00"/>
+<link rel="manifest" href="manifest.json"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+tailwind.config = { darkMode: "class", theme: { extend: { colors: { "primary": "#FF5A00", "secondary": "#E63946", "background-light": "#f6f6f8", "background-dark": "#050505", slate: { 800: '#141414', 900: '#0A0A0A' } }, fontFamily: { "display": ["Inter"] }, borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"}, }, }, }
+</script>
+<title>Universo do Carro - Login</title>
+<style> body { min-height: max(884px, 100dvh); } </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark group/design-root overflow-x-hidden">
+<div class="flex items-center bg-white dark:bg-background-dark p-4 pb-2 justify-between border-b border-primary/10">
+<div class="text-slate-900 dark:text-slate-100 flex size-12 shrink-0 items-center justify-center cursor-pointer" onclick="window.location.href='index.html'" data-icon="ArrowLeft">
+<span translate="no" class="material-symbols-outlined">arrow_back</span>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12">Universo do Carro</h2>
+</div>
+<div class="@container">
+<div class="@[480px]:px-4 @[480px]:py-3">
+<div class="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end overflow-hidden bg-slate-200 dark:bg-slate-800 @[480px]:rounded-lg min-h-[180px]" data-alt="Modern high-end automotive spare parts warehouse" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC1b0SmURR1T-Pk_Aiw-exlmHJvegBN1gt4SVoVy05Qxvhda4FmG9NwDc1QmQyAf_jtWsa-TIxrKagN8caE5UTWRMOnnn5zmrk3_wPtE5bZ3bW_mfkSrUGTPuhHrrG1ni-qGvopCBN1o1Ter8cq9Lk3hKWv6N6D35kaHjkd2Q1KOTHnjL2l3sdEVXNYBJE1GOYX7zMV8xFYHLxPoEsFoWSnbQcEX7nxaqbw767ErKBP1J5gg1UjNcTgeXNHNC2hsejOg1pEcLIt5w4");'>
+</div>
+</div>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 tracking-light text-[28px] font-bold leading-tight px-4 text-center pb-2 pt-6">Bem-vindo ao Universo</h2>
+<p class="text-slate-600 dark:text-slate-400 text-sm text-center px-6 pb-4">A maior plataforma SaaS para gestão de peças automotivas.</p>
+<div class="pb-3">
+<div class="flex border-b border-primary/10 px-4 justify-between" id="auth-tabs">
+<button class="flex flex-col items-center justify-center border-b-[3px] border-primary text-primary pb-[13px] pt-4 flex-1" onclick="toggleAuthMode('login', this)">
+<p class="text-sm font-bold leading-normal tracking-[0.015em]">Entrar</p>
+</button>
+<button class="flex flex-col items-center justify-center border-b-[3px] border-transparent text-slate-500 dark:text-slate-400 pb-[13px] pt-4 flex-1" onclick="toggleAuthMode('register', this)">
+<p class="text-sm font-bold leading-normal tracking-[0.015em]">Cadastrar-se</p>
+</button>
+</div>
+</div>
+<div class="flex flex-col gap-4 px-4 py-3">
+
+<div id="role-selector" class="hidden font-display p-1 bg-slate-100 dark:bg-slate-800 rounded-lg">
+    <button class="flex-1 py-2.5 text-sm font-bold rounded-md bg-white dark:bg-slate-700 shadow text-primary transition-all" onclick="setRole('motorista', this)" id="btn-motorista">Sou Motorista</button>
+    <button class="flex-1 py-2.5 text-sm font-semibold rounded-md text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-all" onclick="setRole('empresa', this)" id="btn-empresa">Sou Empresa</button>
+</div>
+
+<label class="hidden flex-col w-full" id="field-name">
+    <p class="text-slate-900 dark:text-slate-100 text-base font-medium leading-normal pb-2">Nome Completo (ou Razão Social)</p>
+    <div class="relative flex items-center">
+    <span translate="no" class="material-symbols-outlined absolute left-4 text-slate-400">person</span>
+    <input id="name-input" class="form-input flex w-full min-w-0 flex-1 rounded-lg text-slate-900 dark:text-slate-100 focus:outline-0 focus:ring-2 focus:ring-primary border border-primary/20 bg-white dark:bg-slate-900 h-14 placeholder:text-slate-400 pl-12 pr-4 text-base font-normal leading-normal" placeholder="Seu nome" />
+    </div>
+</label>
+
+<label class="hidden flex-col w-full" id="field-cnpj">
+    <p class="text-slate-900 dark:text-slate-100 text-base font-medium leading-normal pb-2">CNPJ</p>
+    <div class="relative flex items-center">
+    <span translate="no" class="material-symbols-outlined absolute left-4 text-slate-400">domain</span>
+    <input id="cnpj-input" class="form-input flex w-full min-w-0 flex-1 rounded-lg text-slate-900 dark:text-slate-100 focus:outline-0 focus:ring-2 focus:ring-primary border border-primary/20 bg-white dark:bg-slate-900 h-14 placeholder:text-slate-400 pl-12 pr-4 text-base font-normal leading-normal" placeholder="00.000.000/0001-00" />
+    </div>
+</label>
+
+<label class="hidden flex-col w-full" id="field-tipo-empresa">
+    <p class="text-slate-900 dark:text-slate-100 text-base font-medium leading-normal pb-2">Tipo de Negócio</p>
+    <div class="relative flex items-center">
+    <span translate="no" class="material-symbols-outlined absolute left-4 text-slate-400 z-10">storefront</span>
+    <select id="tipo-empresa-input" class="form-input flex w-full min-w-0 flex-1 rounded-lg text-slate-900 dark:text-slate-100 focus:outline-0 focus:ring-2 focus:ring-primary border border-primary/20 bg-white dark:bg-slate-900 h-14 pl-12 pr-4 text-base font-normal leading-normal appearance-none cursor-pointer">
+        <option value="" disabled selected>Qual seu tipo de negócio?</option>
+        <option value="oficina">Oficina Mecânica (Comprador Atacado)</option>
+        <option value="autopecas">Loja de Autopeças (Vendedor)</option>
+    </select>
+    <span translate="no" class="material-symbols-outlined absolute right-4 text-slate-400 pointer-events-none">expand_more</span>
+    </div>
+</label>
+
+<label class="hidden flex-col w-full" id="field-cidade">
+    <p class="text-slate-900 dark:text-slate-100 text-base font-medium leading-normal pb-2">Cidade da Empresa</p>
+    <div class="relative flex items-center">
+    <span translate="no" class="material-symbols-outlined absolute left-4 text-slate-400 z-10">location_on</span>
+    <select id="cidade-input" class="form-input flex w-full min-w-0 flex-1 rounded-lg text-slate-900 dark:text-slate-100 focus:outline-0 focus:ring-2 focus:ring-primary border border-primary/20 bg-white dark:bg-slate-900 h-14 pl-12 pr-4 text-base font-normal leading-normal appearance-none cursor-pointer">
+        <option value="" disabled selected>Onde sua empresa atua?</option>
+        <option>São José dos Campos, SP</option>
+        <option>São Paulo, SP</option>
+        <option>Rio de Janeiro, RJ</option>
+        <option>Curitiba, PR</option>
+        <option>Belo Horizonte, MG</option>
+        <option>Outra cidade</option>
+    </select>
+    <span translate="no" class="material-symbols-outlined absolute right-4 text-slate-400 pointer-events-none">expand_more</span>
+    </div>
+</label>
+
+<label id="field-telefone" class="hidden flex-col w-full">
+<p class="text-slate-900 dark:text-slate-100 text-base font-medium leading-normal pb-2">Telefone / WhatsApp</p>
+<div class="relative flex items-center">
+<span translate="no" class="material-symbols-outlined absolute left-4 text-slate-400">phone</span>
+<input id="telefone-input" type="tel" class="form-input flex w-full min-w-0 flex-1 rounded-lg text-slate-900 dark:text-slate-100 focus:outline-0 focus:ring-2 focus:ring-primary border border-primary/20 bg-white dark:bg-slate-900 h-14 placeholder:text-slate-400 pl-12 pr-4 text-base font-normal leading-normal" placeholder="(11) 99999-9999"/>
+</div>
+</label>
+
+<label class="flex flex-col w-full">
+<p class="text-slate-900 dark:text-slate-100 text-base font-medium leading-normal pb-2">E-mail</p>
+<div class="relative flex items-center">
+<span translate="no" class="material-symbols-outlined absolute left-4 text-slate-400">mail</span>
+<input id="email-input" type="email" autocomplete="off" class="form-input flex w-full min-w-0 flex-1 rounded-lg text-slate-900 dark:text-slate-100 focus:outline-0 focus:ring-2 focus:ring-primary border border-primary/20 bg-white dark:bg-slate-900 h-14 placeholder:text-slate-400 pl-12 pr-4 text-base font-normal leading-normal" placeholder="exemplo@email.com" value=""/>
+</div>
+</label>
+<label class="flex flex-col w-full">
+<p class="text-slate-900 dark:text-slate-100 text-base font-medium leading-normal pb-2">Senha</p>
+<div class="relative flex items-center">
+<span translate="no" class="material-symbols-outlined absolute left-4 text-slate-400">lock</span>
+<input id="password-input" autocomplete="new-password" class="form-input flex w-full min-w-0 flex-1 rounded-lg text-slate-900 dark:text-slate-100 focus:outline-0 focus:ring-2 focus:ring-primary border border-primary/20 bg-white dark:bg-slate-900 h-14 placeholder:text-slate-400 pl-12 pr-4 text-base font-normal leading-normal" placeholder="Digite sua senha" type="password" value=""/>
+<span translate="no" class="material-symbols-outlined absolute right-4 text-slate-400 cursor-pointer" onclick="const p = document.getElementById('password-input'); p.type = p.type === 'password' ? 'text' : 'password';">visibility</span>
+</div>
+</label>
+<div id="promo-banner" class="mt-2 p-4 bg-primary/5 rounded-xl border border-primary/10 flex items-center gap-3">
+<div class="bg-primary/20 p-2 rounded-full text-primary">
+<span translate="no" class="material-symbols-outlined">sell</span>
+</div>
+<div>
+<p class="text-sm font-bold text-slate-900 dark:text-slate-100">Descontos para Empresas</p>
+<p class="text-xs text-slate-600 dark:text-slate-400">Use seu <strong>CNPJ</strong> no cadastro para preços exclusivos de revenda.</p>
+</div>
+</div>
+<button id="main-action-btn" onclick="handleLogin()" class="mt-2 w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl transition-colors shadow-lg shadow-primary/20 text-lg uppercase tracking-wide">
+    Entrar na Plataforma
+</button>
+<div class="flex items-center justify-between mt-2 px-1" id="forgot-pwd">
+<button class="text-sm text-primary font-medium hover:underline text-left cursor-pointer" onclick="simularEsqueciSenha()">Esqueceu a senha?</button>
+<div class="flex items-center gap-1">
+<span class="text-sm text-slate-500 dark:text-slate-400">Novo por aqui?</span>
+<button class="text-sm text-primary font-bold hover:underline" onclick="toggleAuthMode('register', document.querySelectorAll('#auth-tabs button')[1])">Criar conta</button>
+</div>
+</div>
+</div>
+
+<div class="h-10 bg-transparent"></div>
+</div>
+<script>
+    let currentMode = 'login'; // login | register
+    let currentRole = 'motorista'; // motorista | empresa
+
+    function toggleAuthMode(mode, btn) {
+        currentMode = mode;
+        
+        // Update tabs styling
+        const tabs = document.querySelectorAll('#auth-tabs button');
+        tabs.forEach(t => {
+            t.className = "flex flex-col items-center justify-center border-b-[3px] border-transparent text-slate-500 dark:text-slate-400 pb-[13px] pt-4 flex-1";
+        });
+        btn.className = "flex flex-col items-center justify-center border-b-[3px] border-primary text-primary pb-[13px] pt-4 flex-1";
+
+        const isReg = currentMode === 'register';
+
+        // Visibility Toggles
+        document.getElementById('role-selector').classList.toggle('hidden', !isReg);
+        document.getElementById('role-selector').classList.toggle('flex', isReg);
+        document.getElementById('field-name').classList.toggle('hidden', !isReg);
+        document.getElementById('field-name').classList.toggle('flex', isReg);
+        document.getElementById('field-telefone').classList.toggle('hidden', !isReg);
+        document.getElementById('field-telefone').classList.toggle('flex', isReg);
+        
+        document.getElementById('promo-banner').classList.toggle('hidden', isReg);
+        document.getElementById('promo-banner').classList.toggle('flex', !isReg);
+        document.getElementById('forgot-pwd').classList.toggle('hidden', isReg);
+        document.getElementById('forgot-pwd').classList.toggle('flex', !isReg);
+        
+        document.getElementById('main-action-btn').innerText = isReg ? 'CRIAR MINHA CONTA' : 'ENTRAR NA PLATAFORMA';
+        
+        updateRoleFields();
+    }
+
+    function setRole(role, btn) {
+        currentRole = role;
+        document.querySelectorAll('#role-selector button').forEach(b => {
+            b.className = 'flex-1 py-2.5 text-sm font-semibold rounded-md text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-all';
+        });
+        btn.className = 'flex-1 py-2.5 text-sm font-bold rounded-md bg-white dark:bg-slate-700 shadow text-primary transition-all';
+        updateRoleFields();
+    }
+
+    function updateRoleFields() {
+        const isReg = currentMode === 'register';
+        const isEmp = currentRole === 'empresa';
+        const showEmpresaFields = isReg && isEmp;
+        
+        document.getElementById('field-cnpj').classList.toggle('hidden', !showEmpresaFields);
+        document.getElementById('field-cnpj').classList.toggle('flex', showEmpresaFields);
+        document.getElementById('field-tipo-empresa').classList.toggle('hidden', !showEmpresaFields);
+        document.getElementById('field-tipo-empresa').classList.toggle('flex', showEmpresaFields);
+        document.getElementById('field-cidade').classList.toggle('hidden', !showEmpresaFields);
+        document.getElementById('field-cidade').classList.toggle('flex', showEmpresaFields);
+    }
+
+    async function handleLogin() {
+        const email = document.getElementById('email-input').value.trim();
+        const pwd = document.getElementById('password-input').value.trim();
+        
+        if (!email || !pwd) {
+            alert('Por favor, preencha email e senha.');
+            return;
+        }
+
+        if (currentMode === 'login') {
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password: pwd })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (data.user && data.user.id) localStorage.setItem('userId', data.user.id);
+                    if (data.role === 'admin') {
+                        localStorage.setItem('isAdmin', 'true');
+                        window.location.href = 'admin.html';
+                    } else if (data.role === 'empresa' || data.user.tipo_empresa) {
+                        localStorage.removeItem('isAdmin');
+                        window.location.href = 'loja.html';
+                    } else {
+                        localStorage.removeItem('isAdmin');
+                        window.location.href = 'comprador.html';
+                    }
+                } else {
+                    alert(data.error || 'Erro no login.');
+                }
+            } catch(e) {
+                alert('Erro de conexão com o servidor.');
+            }
+        } else {
+            // Register logic
+            const name = document.getElementById('name-input').value.trim();
+            
+            const payload = {
+                name: name,
+                email: email,
+                password: pwd,
+                role: currentRole,
+                telefone: document.getElementById('telefone-input').value.trim()
+            };
+            if(!payload.telefone) { alert("Telefone/WhatsApp é obrigatório para marketing e contato."); return; }
+
+            if (currentRole === 'empresa') {
+                payload.cnpj = document.getElementById('cnpj-input').value.trim();
+                
+                if (!isCnpjValid(payload.cnpj)) {
+                    alert("Atenção: O CNPJ inserido tem uma formatação inválida/falsa. Corrija para criar sua conta da Loja/Oficina.");
+                    return;
+                }
+
+                payload.tipo_empresa = document.getElementById('tipo-empresa-input').value;
+                payload.cidade = document.getElementById('cidade-input').value;
+
+                if (payload.tipo_empresa === 'autopecas' && (!payload.cidade || payload.cidade === "")) {
+                    alert("Atenção: Você precisa selecionar obrigatoriamente a cidade onde sua autopeças atua.");
+                    return;
+                }
+            }
+
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    if (data.user && data.user.id) localStorage.setItem('userId', data.user.id);
+                    if (currentRole === 'empresa') {
+                        window.location.href = 'loja.html';
+                    } else {
+                        window.location.href = 'comprador.html';
+                    }
+                } else {
+                    alert(data.error + (data.details ? '\nDetalhes: ' + data.details : ''));
+                }
+            } catch(e) {
+                alert('Erro de conexão com o servidor.');
+            }
+        }
+    }
+
+    function isCnpjValid(cnpj) {
+        cnpj = cnpj.replace(/[^\d]+/g,'');
+        if (cnpj == '') return false;
+        if (cnpj.length != 14) return false;
+        if (cnpj == "00000000000000" || Math.max(...cnpj.split('').map(Number)) === Math.min(...cnpj.split('').map(Number))) return false;
+        let tamanho = cnpj.length - 2;
+        let numeros = cnpj.substring(0,tamanho);
+        let digitos = cnpj.substring(tamanho);
+        let soma = 0;
+        let pos = tamanho - 7;
+        for (let i = tamanho; i >= 1; i--) {
+            soma += numeros.charAt(tamanho - i) * pos--;
+            if (pos < 2) pos = 9;
+        }
+        let resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+        if (resultado != digitos.charAt(0)) return false;
+        tamanho = tamanho + 1;
+        numeros = cnpj.substring(0,tamanho);
+        soma = 0;
+        pos = tamanho - 7;
+        for (let i = tamanho; i >= 1; i--) {
+            soma += numeros.charAt(tamanho - i) * pos--;
+            if (pos < 2) pos = 9;
+        }
+        resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+        if (resultado != digitos.charAt(1)) return false;
+        return true;
+    }
+
+    async function simularEsqueciSenha() {
+        const emailRec = prompt("Digite seu E-mail de recuperação:");
+        if (!emailRec) return;
+
+        try {
+            const r1 = await fetch('/api/forgot-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: emailRec })
+            });
+            const d1 = await r1.json();
+
+            if (d1.success) {
+                // Simulando que o usuário "recebeu" o email (neste ambiente de desenvolvimento)
+                const mockDigitado = prompt(`Um link de redefinição FOI ENVIADO para ${emailRec}!\n\n*(MOCK DE DESENVOLVEDOR: O Token que deveria estar no email é [ ${d1.token_mock} ], cole-o abaixo*):`);
+                if (!mockDigitado) return;
+
+                const novaSenha = prompt("Digite sua Nova Senha:");
+                if (!novaSenha) return;
+
+                const r2 = await fetch('/api/reset-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: emailRec, token: mockDigitado, newPassword: novaSenha })
+                });
+                const d2 = await r2.json();
+
+                if (d2.success) {
+                    alert('Lindo! Sua nova senha foi definida com segurança. Tente fazer o login.');
+                } else {
+                    alert(d2.error);
+                }
+            } else {
+                alert(d1.error || 'Erro.');
+            }
+        } catch(e) {
+            alert('Não foi possível comunicar com o backend.');
+        }
+    }
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Bloqueia o preenchimento automático do navegador usando JavaScript direto
+        setTimeout(() => {
+            document.getElementById('email-input').value = '';
+            document.getElementById('password-input').value = '';
+        }, 100);
+    });
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js');
+    });
+  }
+</script>
+</body></html>

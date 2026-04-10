@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+
+<html lang="en" class="dark"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta name="theme-color" content="#FF5A00"/>
+<link rel="manifest" href="manifest.json"/>
+<title>Universo do Carro - Shop Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#FF5A00",
+              "secondary": "#E63946",
+              "background-light": "#f6f6f8",
+              "background-dark": "#050505",
+              slate: {
+                800: '#141414',
+                900: '#0A0A0A',
+              }
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
+<div class="relative flex min-h-screen w-full flex-col">
+<!-- Header Section -->
+<header class="sticky top-0 z-50 flex items-center bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-4 justify-between">
+<div class="flex items-center gap-3">
+<div class="text-primary flex size-10 shrink-0 items-center justify-center bg-primary/10 rounded-lg">
+<span translate="no" class="material-symbols-outlined text-2xl">storefront</span>
+</div>
+<div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-tight">Universo do Carro</h2>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-medium">Painel da Loja de Autopeças</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex size-10 items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300">
+<span translate="no" class="material-symbols-outlined">notifications</span>
+</button>
+<div onclick="localStorage.clear(); window.location.href='login.html'" title="Sair / Logout" class="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs border border-primary/30 cursor-pointer hover:bg-red-500/20 hover:text-red-500 transition-colors">
+                <span translate="no" class="material-symbols-outlined" style="font-size: 14px;">logout</span>
+            </div>
+</div>
+</header>
+<!-- Navigation Tabs -->
+<nav class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+<div class="flex px-4 gap-8 overflow-x-auto no-scrollbar">
+<a class="flex flex-col items-center justify-center border-b-2 border-primary text-primary pb-3 pt-4 whitespace-nowrap" href="#">
+<span class="text-sm font-bold">Aguardando</span>
+</a>
+<a class="flex flex-col items-center justify-center border-b-2 border-transparent text-slate-500 dark:text-slate-400 hover:text-primary pb-3 pt-4 whitespace-nowrap" href="#">
+<span class="text-sm font-bold">Ofertas Enviadas</span>
+</a>
+<a class="flex flex-col items-center justify-center border-b-2 border-transparent text-slate-500 dark:text-slate-400 hover:text-primary pb-3 pt-4 whitespace-nowrap" href="#">
+<span class="text-sm font-bold">Pedidos Ativos</span>
+</a>
+<a class="flex flex-col items-center justify-center border-b-2 border-transparent text-slate-500 dark:text-slate-400 hover:text-primary pb-3 pt-4 whitespace-nowrap" href="#">
+<span class="text-sm font-bold">Concluídos</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 overflow-y-auto p-4 @container">
+<div class="flex items-center justify-between mb-6">
+<div>
+<h1 class="text-slate-900 dark:text-white text-2xl font-bold tracking-tight">Novos Pedidos de Cotação</h1>
+<p class="text-slate-500 dark:text-slate-400 text-sm">Exibindo cotações pendentes na sua região</p>
+</div>
+<button class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50">
+<span translate="no" class="material-symbols-outlined text-sm">filter_list</span> Filtrar
+            </button>
+</div>
+<!-- Waiting List Cards -->
+<div class="grid gap-4" id="requisicoes-container">
+    <div class="text-center text-sm text-slate-500 py-4">Buscando requisições na sua região...</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<footer class="sticky bottom-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-4 pb-4 pt-2">
+<div class="flex gap-2 max-w-lg mx-auto">
+<a class="flex flex-1 flex-col items-center justify-center gap-1 rounded-xl text-slate-400 hover:text-primary py-1" href="loja.html">
+<span translate="no" class="material-symbols-outlined">dashboard</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Início</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 rounded-xl text-primary py-1" href="loja.html">
+<span translate="no" class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">chat</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Cotações</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 rounded-xl text-slate-400 hover:text-primary py-1" href="#" onclick="alert('Estoque em breve!'); return false;">
+<span translate="no" class="material-symbols-outlined">inventory_2</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Estoque</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 rounded-xl text-slate-400 hover:text-primary py-1" href="#" onclick="alert('Perfil em breve!'); return false;">
+<span translate="no" class="material-symbols-outlined">account_circle</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Perfil</p>
+</a>
+</div>
+</footer>
+</div>
+<style>
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+</style>
+<script>
+    let maxCotacaoIdSeen = 0;
+    let permitAudio = false;
+
+    // Necessário porque navegadores bloqueiam som até o primeiro clique da pessoa.
+    document.addEventListener('click', () => { permitAudio = true; }, { once: true });
+
+    function playBingoRadar() {
+        if (!permitAudio) return;
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+            osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.15);
+            osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.3);
+            osc.frequency.setValueAtTime(1046.50, ctx.currentTime + 0.5);
+            
+            gain.gain.setValueAtTime(0.3, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 1.2);
+            
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 1.2);
+        } catch(e) {}
+    }
+
+    async function loadRequisicoes() {
+        try {
+            const res = await fetch('/api/cotacoes/todas');
+            const data = await res.json();
+            const container = document.getElementById('requisicoes-container');
+            
+            if (data.cotacoes && data.cotacoes.length > 0) {
+                const currentMax = Math.max(...data.cotacoes.map(c => c.id));
+                if (maxCotacaoIdSeen > 0 && currentMax > maxCotacaoIdSeen) {
+                    playBingoRadar(); // Toca BINGO se achar uma ID maior que as que já viu!
+                }
+                maxCotacaoIdSeen = currentMax;
+
+                container.innerHTML = '';
+                data.cotacoes.forEach(cot => {
+                    const dataFormatada = new Date(cot.created_at).toLocaleString('pt-BR');
+                    container.innerHTML += `
+                    <div class="group flex flex-col items-stretch justify-start rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden hover:border-primary/50 transition-colors">
+                        <div class="flex flex-col @xl:flex-row">
+                            <div class="w-full @xl:w-64 h-48 @xl:h-auto bg-center bg-no-repeat bg-cover shrink-0 relative" style="${cot.foto_url ? `background-image: url('${cot.foto_url}');` : 'background-color: #2a2a2a;'}">
+                                <div class="absolute p-3 z-10 w-full flex justify-between">
+                                    <span class="bg-primary text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider shadow-sm">Nova Requisição</span>
+                                </div>
+                                ${!cot.foto_url ? `
+                                <div class="flex items-center justify-center h-full text-slate-500">
+                                    <span translate="no" class="material-symbols-outlined text-4xl mt-4">inventory_2</span>
+                                </div>` : ''}
+                            </div>
+                            <div class="flex w-full grow flex-col justify-between p-5">
+                                <div class="flex flex-col @xl:flex-row justify-between gap-4">
+                                    <div>
+                                        <h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-tight mb-1">${cot.marca} ${cot.modelo} ${cot.ano}</h3>
+                                        <div class="flex flex-wrap gap-x-4 gap-y-1 text-slate-500 dark:text-slate-400 text-sm mb-3">
+                                            <div class="flex items-center gap-1"><span translate="no" class="material-symbols-outlined text-sm">tag</span> ${cot.chassi || 'Sem Chassi'}</div>
+                                            <div class="flex items-center gap-1"><span translate="no" class="material-symbols-outlined text-sm">schedule</span> ${dataFormatada}</div>
+                                            <div class="flex items-center gap-1 text-primary font-bold"><span translate="no" class="material-symbols-outlined text-sm">person</span> Cliente: ${cot.cliente_nome}</div>
+                                        </div>
+                                        <div class="space-y-1">
+                                            <p class="text-slate-700 dark:text-slate-300 text-sm font-medium">Peça e Descrição:</p>
+                                            <div class="flex flex-wrap gap-2">
+                                                <span class="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-sm text-primary font-bold">${cot.peca}</span>
+                                                <span class="text-sm text-slate-500">${cot.descricao || ''}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex @xl:flex-col items-center @xl:items-end justify-between @xl:justify-start gap-3 mt-4 @xl:mt-0">
+                                        <div class="text-right">
+                                            <p class="text-slate-400 text-[10px] uppercase font-bold">ID da Requisição</p>
+                                            <p class="text-slate-900 dark:text-white font-mono font-bold">#QT-${String(cot.id).padStart(4,'0')}</p>
+                                        </div>
+                                        <button onclick="abrirModalOferta(${cot.id})" class="flex items-center justify-center gap-2 rounded-lg h-10 px-6 bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-all shadow-md shadow-primary/20 mt-2">
+                                            <span translate="no" class="material-symbols-outlined text-sm">send</span> Fazer Oferta
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                });
+            } else {
+                container.innerHTML = '<div class="text-sm text-center text-slate-500 py-4">Nenhuma requisição aguardando.</div>';
+            }
+        } catch(e) {
+            console.error(e);
+        }
+    }
+
+    let currentCotacaoModalId = null;
+
+    function abrirModalOferta(cotacaoId) {
+        currentCotacaoModalId = cotacaoId;
+        document.getElementById('modal-oferta').classList.remove('hidden');
+    }
+
+    function fecharModalOferta() {
+        document.getElementById('modal-oferta').classList.add('hidden');
+        document.getElementById('oferta-valor').value = '';
+        document.getElementById('oferta-garantia').value = '';
+    }
+
+    async function enviarOferta() {
+        const lojaId = localStorage.getItem('userId');
+        if(!lojaId) {
+            alert('Você precisa estar logado como loja.');
+            window.location.href = 'login.html';
+            return;
+        }
+
+        const valorStr = document.getElementById('oferta-valor').value;
+        if (!valorStr) { alert("Valor obrigatório."); return; }
+        const valor = parseFloat(valorStr.replace(',', '.'));
+        
+        const peca_tipo = document.getElementById('oferta-tipo').value;
+        const garantia = document.getElementById('oferta-garantia').value;
+        
+        if (isNaN(valor)) {
+            alert('Valor numérico inválido!');
+            return;
+        }
+
+        document.getElementById('btn-enviar-oferta').innerText = "Enviando...";
+
+        try {
+            const res = await fetch('/api/ofertas', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    cotacao_id: currentCotacaoModalId,
+                    loja_id: lojaId,
+                    valor: valor,
+                    mensagem: "Oferta de Autopeça",
+                    garantia: garantia || 'Não informada',
+                    peca_tipo: peca_tipo
+                })
+            });
+            const data = await res.json();
+            if(data.success) {
+                alert('Oferta enviada com Sucesso Total!');
+                fecharModalOferta();
+                loadRequisicoes();
+            } else {
+                alert(data.error || 'Erro ao enviar oferta.');
+            }
+        } catch(e) {
+            alert('Erro de conexão');
+        } finally {
+            document.getElementById('btn-enviar-oferta').innerText = "Confirmar Oferta Oficial";
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadRequisicoes();
+        // RADAR AUTOMÁTICO - Busca a cada 10s (em background)
+        setInterval(loadRequisicoes, 10000); 
+    });
+</script>
+
+<!-- MODAL DE OFERTAS: SUBSTITUI O PROMPT -->
+<div id="modal-oferta" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm transition-all shadow-2xl">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
+        <div class="p-6">
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-1">Montar Oferta</h3>
+            <p class="text-sm text-slate-500 mb-6">Ofereça as melhores condições e vença a concorrência legalmente.</p>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Preço (R$)</label>
+                    <input type="number" id="oferta-valor" class="w-full form-input rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-primary h-12" placeholder="0.00">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Tipo da Peça</label>
+                    <select id="oferta-tipo" class="w-full form-input rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-primary h-12">
+                        <option value="Genuína (Original)">Genuína (Original na Caixa)</option>
+                        <option value="Paralela (Primeira Linha)">Paralela (Primeira Linha)</option>
+                        <option value="Usada/Desmanche Oficial">Usada (Desmanche Oficial)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Garantia (Opcional)</label>
+                    <input type="text" id="oferta-garantia" class="w-full form-input rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-primary h-12" placeholder="Ex: 90 dias / 3 meses">
+                </div>
+            </div>
+
+            <div class="mt-8 flex gap-3">
+                <button onclick="fecharModalOferta()" class="flex-1 py-3 px-4 rounded-xl text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition">Cancelar</button>
+                <button type="button" id="btn-enviar-oferta" onclick="enviarOferta()" class="flex-1 py-3 px-4 rounded-xl text-white bg-primary font-bold shadow-lg shadow-primary/30 hover:bg-primary/90 transition">Confirmar Oferta Oficial</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js');
+    });
+  }
+</script>
+</body></html>
