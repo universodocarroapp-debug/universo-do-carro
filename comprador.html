@@ -57,11 +57,25 @@
 <main class="flex-1 w-full max-w-xl mx-auto pb-24">
 <div class="p-4 space-y-4">
 <div class="flex gap-2 items-center">
-<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 shadow-sm">
+<button onclick="alterarCidade()" class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors cursor-pointer">
 <span translate="no" class="material-symbols-outlined text-primary text-[20px]">location_on</span>
-<p class="text-slate-700 dark:text-slate-300 text-sm font-medium">São José dos Campos, SP</p>
+<p id="display-cidade" class="text-slate-700 dark:text-slate-300 text-sm font-medium">São Paulo, SP</p>
 <span translate="no" class="material-symbols-outlined text-slate-400 text-[20px]">expand_more</span>
 </button>
+<script>
+    function alterarCidade() {
+        const nova = prompt("Em qual cidade você está buscando peças agora? (Ex: Campinas, SP)");
+        if(nova && nova.trim() !== "") {
+            localStorage.setItem('cidade_comprador', nova);
+            document.getElementById('display-cidade').innerText = nova;
+        }
+    }
+    // Carrega a cidade salva ou padrão
+    document.addEventListener('DOMContentLoaded', () => {
+        const salva = localStorage.getItem('cidade_comprador');
+        if(salva) document.getElementById('display-cidade').innerText = salva;
+    });
+</script>
 </div>
 <div class="relative group">
 <label class="flex flex-col w-full">
