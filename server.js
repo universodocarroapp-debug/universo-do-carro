@@ -9,7 +9,7 @@ const { createClient } = require('@supabase/supabase-js');
 
 // Configuração do Supabase 
 const supabaseUrl = 'https://xkiqkzrmavnqchqkyyvw.supabase.co';
-const supabaseKey = process.env.SUPABASE_SERVICE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZjI6InhraXFrenJtYXZucWNoa3l5dndpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcxMjc1MzMyNSwiZXhwIjoyMDI4MzI5MzI1fQ.V5zabP6USwGJFLKX7SoaiJci1M6g7GNJNul_X7R5SWY';
+const supabaseKey = process.env.SUPABASE_SERVICE_KEY || '';
 
 // AVISO: A Service Role Key do Supabase deve começar com 'eyJ' (formato JWT)
 if (!supabaseKey.startsWith('eyJ')) {
