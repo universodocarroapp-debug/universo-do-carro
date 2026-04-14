@@ -3,8 +3,6 @@
 <html lang="pt-br" class="dark"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<meta name="theme-color" content="#FF5A00"/>
-<link rel="manifest" href="manifest.json"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -32,7 +30,7 @@
             },
         }
     </script>
-<title>Universo do Carro - Meu Painel</title>
+<title>Universo do Carro - Comprador</title>
 <style>
     body {
       min-height: max(884px, 100dvh);
@@ -43,12 +41,12 @@
 <div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
 <header class="sticky top-0 z-50 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
 <div class="flex items-center p-4 justify-between max-w-xl mx-auto w-full">
-<button onclick="toggleSidebar()" class="text-primary flex size-10 shrink-0 items-center justify-center hover:bg-primary/10 rounded-full transition-colors cursor-pointer">
+<div class="text-primary flex size-10 shrink-0 items-center justify-center">
 <span translate="no" class="material-symbols-outlined text-3xl">menu</span>
-</button>
+</div>
 <h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight flex-1 text-center">Universo do Carro</h2>
 <div class="flex w-10 items-center justify-end">
-<button onclick="localStorage.clear(); window.location.href='login.html'" title="Sair" class="flex items-center justify-center rounded-full size-10 bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+<button onclick="window.location.href='login.html'" title="Sair" class="flex items-center justify-center rounded-full size-10 bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
 <span translate="no" class="material-symbols-outlined">logout</span>
 </button>
 </div>
@@ -56,26 +54,25 @@
 </header>
 <main class="flex-1 w-full max-w-xl mx-auto pb-24">
 <div class="p-4 space-y-4">
-<div class="flex gap-2 items-center">
-<button onclick="alterarCidade()" class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors cursor-pointer">
+<div class="flex gap-2 items-center relative">
+<button onclick="document.getElementById('city-dropdown').classList.toggle('hidden')" class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 shadow-sm focus:ring-2 focus:ring-primary/50 outline-none transition-all">
 <span translate="no" class="material-symbols-outlined text-primary text-[20px]">location_on</span>
-<p id="display-cidade" class="text-slate-700 dark:text-slate-300 text-sm font-medium">São José dos Campos, SP</p>
+<p id="selected-city" class="text-slate-700 dark:text-slate-300 text-sm font-medium">São Paulo, SP</p>
 <span translate="no" class="material-symbols-outlined text-slate-400 text-[20px]">expand_more</span>
 </button>
-<script>
-    function alterarCidade() {
-        const nova = prompt("Em qual cidade você está buscando peças agora? (Ex: Campinas, SP)");
-        if(nova && nova.trim() !== "") {
-            localStorage.setItem('cidade_comprador', nova);
-            document.getElementById('display-cidade').innerText = nova;
-        }
-    }
-    // Carrega a cidade salva ou padrão
-    document.addEventListener('DOMContentLoaded', () => {
-        const salva = localStorage.getItem('cidade_comprador');
-        if(salva) document.getElementById('display-cidade').innerText = salva;
-    });
-</script>
+<!-- Dropdown Menu -->
+<div id="city-dropdown" class="hidden absolute top-12 left-0 w-56 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50 overflow-hidden">
+<div class="p-2 border-b border-slate-100 dark:border-slate-700">
+<span class="text-xs font-semibold text-slate-500 px-2 uppercase tracking-wider">Mudar Localização</span>
+</div>
+<div class="py-1">
+<button class="w-full text-left px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-700 text-sm text-slate-700 dark:text-slate-300 transition-colors" onclick="selectCity('São Paulo, SP')">São Paulo, SP</button>
+<button class="w-full text-left px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-700 text-sm text-slate-700 dark:text-slate-300 transition-colors" onclick="selectCity('Rio de Janeiro, RJ')">Rio de Janeiro, RJ</button>
+<button class="w-full text-left px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-700 text-sm text-slate-700 dark:text-slate-300 transition-colors" onclick="selectCity('Belo Horizonte, MG')">Belo Horizonte, MG</button>
+<button class="w-full text-left px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-700 text-sm text-slate-700 dark:text-slate-300 transition-colors" onclick="selectCity('Curitiba, PR')">Curitiba, PR</button>
+<button class="w-full text-left px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-700 text-sm text-slate-700 dark:text-slate-300 transition-colors" onclick="selectCity('Porto Alegre, RS')">Porto Alegre, RS</button>
+</div>
+</div>
 </div>
 <div class="relative group">
 <label class="flex flex-col w-full">
@@ -108,27 +105,91 @@
 <h3 class="text-slate-900 dark:text-slate-100 text-xl font-bold tracking-tight">Cotações Ativas</h3>
 <a class="text-primary text-sm font-semibold" href="#">Ver todas</a>
 </div>
-<div class="px-4 space-y-3" id="cotacoes-container">
-    <div class="text-center text-sm text-slate-500 py-4">Buscando suas cotações...</div>
+<div class="px-4 space-y-3">
+<div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+<div class="flex justify-between items-start mb-3">
+<div>
+<h4 class="font-bold text-slate-900 dark:text-slate-100">Kit Suspensão Dianteira</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400">Honda Civic 2018 • #QT-8821</p>
+</div>
+<span class="px-2 py-1 rounded-md bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 text-[10px] font-bold uppercase tracking-wider">Aguardando</span>
+</div>
+<div class="flex items-center gap-4 text-sm border-t border-slate-100 dark:border-slate-700 pt-3">
+<div class="flex items-center gap-1 text-slate-600 dark:text-slate-400">
+<span translate="no" class="material-symbols-outlined text-[18px]">store</span>
+<span>12 ofertas</span>
+</div>
+<div class="flex items-center gap-1 text-slate-600 dark:text-slate-400">
+<span translate="no" class="material-symbols-outlined text-[18px]">schedule</span>
+<span>2h atrás</span>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+<div class="flex justify-between items-start mb-3">
+<div>
+<h4 class="font-bold text-slate-900 dark:text-slate-100">Par de Faróis LED</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400">Toyota Corolla 2021 • #QT-8790</p>
+</div>
+<span class="px-2 py-1 rounded-md bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-[10px] font-bold uppercase tracking-wider">Concluído</span>
+</div>
+<div class="flex items-center gap-4 text-sm border-t border-slate-100 dark:border-slate-700 pt-3">
+<div class="flex items-center gap-1 text-slate-600 dark:text-slate-400">
+<span translate="no" class="material-symbols-outlined text-[18px]">store</span>
+<span>8 ofertas</span>
+</div>
+<div class="flex items-center gap-1 text-primary font-medium">
+<span>Melhor preço: R$ 1.250,00</span>
+</div>
+</div>
+</div>
 </div>
 </section>
-
+<section class="mt-8 px-4">
+<h3 class="text-slate-900 dark:text-slate-100 text-lg font-bold mb-4">Categorias Populares</h3>
+<div class="grid grid-cols-4 gap-4">
+<div class="flex flex-col items-center gap-2">
+<div class="size-14 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-primary">
+<span translate="no" class="material-symbols-outlined text-2xl">settings_input_component</span>
+</div>
+<span class="text-[10px] font-medium text-center text-slate-600 dark:text-slate-400">Motor</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="size-14 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-primary">
+<span translate="no" class="material-symbols-outlined text-2xl">tire_repair</span>
+</div>
+<span class="text-[10px] font-medium text-center text-slate-600 dark:text-slate-400">Suspensão</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="size-14 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-primary">
+<span translate="no" class="material-symbols-outlined text-2xl">bolt</span>
+</div>
+<span class="text-[10px] font-medium text-center text-slate-600 dark:text-slate-400">Elétrica</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="size-14 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-primary">
+<span translate="no" class="material-symbols-outlined text-2xl">format_paint</span>
+</div>
+<span class="text-[10px] font-medium text-center text-slate-600 dark:text-slate-400">Lataria</span>
+</div>
+</div>
+</section>
 </main>
 <nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-4 pb-4 pt-2 z-50">
 <div class="flex max-w-xl mx-auto items-center justify-between">
-<a class="flex flex-1 flex-col items-center gap-1 text-primary" href="comprador.html">
+<a class="flex flex-1 flex-col items-center gap-1 text-primary" href="#">
 <span translate="no" class="material-symbols-outlined fill-1">home</span>
 <p class="text-[10px] font-bold">Início</p>
 </a>
-<a class="flex flex-1 flex-col items-center gap-1 text-slate-500 dark:text-slate-400 hover:text-primary transition-colors cursor-pointer" onclick="document.getElementById('cotacoes-container').scrollIntoView({behavior: 'smooth'})">
+<a class="flex flex-1 flex-col items-center gap-1 text-slate-500 dark:text-slate-400" href="#">
 <span translate="no" class="material-symbols-outlined">request_quote</span>
 <p class="text-[10px] font-medium">Cotações</p>
 </a>
-<a class="flex flex-1 flex-col items-center gap-1 text-slate-500 dark:text-slate-400 hover:text-primary transition-colors cursor-pointer" onclick="alert('Seus pedidos confirmados aparecerão nesta tela na próxima versão!');">
+<a class="flex flex-1 flex-col items-center gap-1 text-slate-500 dark:text-slate-400" href="#">
 <span translate="no" class="material-symbols-outlined">shopping_bag</span>
 <p class="text-[10px] font-medium">Pedidos</p>
 </a>
-<a class="flex flex-1 flex-col items-center gap-1 text-slate-500 dark:text-slate-400 hover:text-primary transition-colors cursor-pointer" onclick="toggleSidebar()">
+<a class="flex flex-1 flex-col items-center gap-1 text-slate-500 dark:text-slate-400" href="#">
 <span translate="no" class="material-symbols-outlined">person</span>
 <p class="text-[10px] font-medium">Perfil</p>
 </a>
@@ -197,141 +258,6 @@
 </div>
 
 <script>
-    async function loadCotacoes() {
-        const userId = localStorage.getItem('userId');
-        if(!userId) {
-            document.getElementById('cotacoes-container').innerHTML = '<div class="text-sm text-center">Faça login para ver as cotações.</div>';
-            return;
-        }
-
-        try {
-            const res = await fetch('/api/cotacoes/minhas/' + userId);
-            const data = await res.json();
-            
-            const container = document.getElementById('cotacoes-container');
-            if (data.cotacoes && data.cotacoes.length > 0) {
-                container.innerHTML = '';
-                data.cotacoes.forEach(cot => {
-                    const statusClass = cot.status === 'Concluído' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700';
-                    container.innerHTML += `
-                    <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm cursor-pointer" onclick="verOfertas(${cot.id})">
-                        <div class="flex justify-between items-start mb-3">
-                            <div>
-                                <h4 class="font-bold text-slate-900 dark:text-slate-100">${cot.peca || 'Peça não identificada'}</h4>
-                                <p class="text-xs text-slate-500 dark:text-slate-400">${cot.marca} ${cot.modelo} ${cot.ano} • #QT-${String(cot.id).padStart(4,'0')}</p>
-                            </div>
-                            <span id="status-badge-${cot.id}" class="px-2 py-1 rounded-md ${statusClass} dark:bg-opacity-30 text-[10px] font-bold uppercase tracking-wider">${cot.status}</span>
-                        </div>
-                        <div class="flex items-center gap-4 text-sm border-t border-slate-100 dark:border-slate-700 pt-3">
-                            <div class="flex items-center gap-1 text-primary font-medium" id="ofertas-count-${cot.id}">
-                                <span>Checando ofertas...</span>
-                            </div>
-                        </div>
-                    </div>
-                    `;
-                    loadOfertasQuantity(cot.id);
-                });
-            } else {
-                container.innerHTML = '<div class="text-sm text-center text-slate-500 py-4">Nenhuma cotação ativa no momento. Busque peças acima!</div>';
-            }
-        } catch(e) {
-            console.error(e);
-        }
-    }
-
-    async function loadOfertasQuantity(cotacaoId) {
-        try {
-            const res = await fetch('/api/ofertas/' + cotacaoId);
-            const data = await res.json();
-            const el = document.getElementById('ofertas-count-' + cotacaoId);
-            const badgeEl = document.getElementById('status-badge-' + cotacaoId);
-            if (data.ofertas && data.ofertas.length > 0) {
-                const melhorPreco = Math.min(...data.ofertas.map(o => o.valor));
-                el.innerHTML = `<span class="font-bold text-primary">🔥 ${data.ofertas.length} proposta(s)! A partir de R$ ${melhorPreco.toFixed(2)}</span>`;
-                // Atualiza o badge de status visualmente se ainda estiver "Aguardando"
-                if (badgeEl && badgeEl.innerText.trim().toUpperCase() === 'AGUARDANDO') {
-                    badgeEl.className = 'px-2 py-1 rounded-md bg-primary/10 text-primary dark:bg-opacity-30 text-[10px] font-bold uppercase tracking-wider animate-pulse';
-                    badgeEl.innerText = 'Com Propostas';
-                }
-            } else {
-                el.innerHTML = `<span class="text-slate-500">Aguardando orçamentos...</span>`;
-            }
-        } catch(err) {}
-    }
-
-    async function verOfertas(cotacaoId) {
-        document.getElementById('modal-ofertas-comprador').classList.remove('hidden');
-        const lista = document.getElementById('ofertas-lista-comprador');
-        lista.innerHTML = '<div class="p-4 text-center text-slate-500">Buscando ofertas...</div>';
-
-        try {
-            const res = await fetch('/api/ofertas/' + cotacaoId);
-            const data = await res.json();
-            
-            if (data.ofertas && data.ofertas.length > 0) {
-                lista.innerHTML = '';
-                data.ofertas.forEach(of => {
-                    lista.innerHTML += `
-                        <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col gap-3">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <h4 class="font-bold text-slate-900 dark:text-slate-100">${of.loja_nome}</h4>
-                                    <p class="text-xs text-slate-500">${of.peca_tipo || 'Padrão'} • ${of.loja_cidade}</p>
-                                </div>
-                                <span class="text-lg font-black text-primary">R$ ${of.valor.toFixed(2)}</span>
-                            </div>
-                            <div class="text-sm text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/50 p-2 rounded-lg">
-                                <span class="font-medium">Mensagem:</span> ${of.mensagem}<br/>
-                                <span class="font-medium text-primary">Garantia:</span> ${of.garantia || 'Sem garantia informada'}
-                            </div>
-                            <button onclick="aceitarOferta(${cotacaoId}, ${of.id})" class="w-full mt-2 bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl transition-all shadow-md flex items-center justify-center gap-2">
-                                <span translate="no" class="material-symbols-outlined text-sm">handshake</span> Aceitar e Chamar no WhatsApp
-                            </button>
-                        </div>
-                    `;
-                });
-            } else {
-                lista.innerHTML = '<div class="p-4 text-center text-slate-500 font-medium">Nenhuma loja enviou proposta para essa peça ainda.</div>';
-            }
-        } catch(e) {
-            lista.innerHTML = '<div class="p-4 text-center text-red-500">Erro ao carregar propostas.</div>';
-        }
-    }
-
-    async function aceitarOferta(cotacaoId, ofertaId) {
-        try {
-            const res = await fetch('/api/cotacoes/aceitar', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ cotacao_id: cotacaoId, oferta_id: ofertaId })
-            });
-            const data = await res.json();
-            
-            if (data.success && data.telefone) {
-                // Clear any characters
-                let wpp = data.telefone.replace(/\D/g, '');
-                // Inject country code if missing
-                if(!wpp.startsWith('55') && wpp.length >= 10) wpp = '55' + wpp;
-                
-                alert('Tudo Certo! Match Realizado com sucesso. O pedido foi fechado na plataforma.\n\nVamos redirecionar você para o WhatsApp oficial da Autopeças!');
-                fecharModalOfertasComprador();
-                loadCotacoes();
-                
-                const wppUrl = `https://wa.me/${wpp}?text=Ol%C3%A1!%20Fechei%20uma%20venda%20com%20voc%C3%AAs%20atrav%C3%A9s%20do%20Universo%20do%20Carro(Pedido%20%23QT-${cotacaoId}).%20Como%20procedemos%20com%20o%20pagamento%20e%20entrega%3F`;
-                window.open(wppUrl, '_blank');
-            } else {
-                alert(data.error || 'Erro ao fechar venda. Verifique sua conexão.');
-            }
-        } catch(e) {
-            alert('Erro de conexão ao processar o Aceite!');
-        }
-    }
-
-    function fecharModalOfertasComprador() {
-        document.getElementById('modal-ofertas-comprador').classList.add('hidden');
-    }
-
-    document.addEventListener('DOMContentLoaded', loadCotacoes);
     function toggleAssistant() {
         const modal = document.getElementById('ai-assistant-modal');
         if(modal.classList.contains('opacity-0')) {
@@ -340,6 +266,20 @@
             modal.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
         }
     }
+
+    function selectCity(city) {
+        document.getElementById('selected-city').innerText = city;
+        document.getElementById('city-dropdown').classList.add('hidden');
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        const button = document.querySelector('.flex.gap-2.items-center.relative button');
+        const dropdown = document.getElementById('city-dropdown');
+        if (dropdown && !dropdown.classList.contains('hidden') && !button.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.add('hidden');
+        }
+    });
 
     function sendUserMsg(text) {
         document.getElementById('chat-input').value = text;
@@ -412,71 +352,6 @@
                 chatMsg.scrollTop = chatMsg.scrollHeight;
             }, 1200);
         }, 400);
-    }
-</script>
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js');
-    });
-  }
-</script>
-
-<!-- MODAL DE OFERTAS DO COMPRADOR -->
-<div id="modal-ofertas-comprador" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/80 backdrop-blur-sm transition-all sm:p-4">
-    <div class="bg-slate-50 dark:bg-slate-900 w-full sm:max-w-md h-[85vh] sm:h-[80vh] rounded-t-3xl sm:rounded-2xl overflow-hidden flex flex-col shadow-2xl">
-        
-        <div class="p-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center sticky top-0 z-10 shadow-sm">
-            <h3 class="font-bold text-slate-900 dark:text-white text-lg">Propostas Recebidas</h3>
-            <button onclick="fecharModalOfertasComprador()" class="bg-slate-100 dark:bg-slate-800 p-2 rounded-full text-slate-500 hover:text-red-500 transition-colors">
-                <span translate="no" class="material-symbols-outlined text-sm block">close</span>
-            </button>
-        </div>
-        
-        <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-4 no-scrollbar" id="ofertas-lista-comprador">
-            <!-- Injected via JS -->
-        </div>
-    </div>
-</div>
-
-<!-- GLOBAL SIDEBAR -->
-<div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/50 z-[100] hidden opacity-0 transition-opacity backdrop-blur-sm" onclick="toggleSidebar()"></div>
-<div id="sidebar" class="fixed top-0 left-0 bottom-0 w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 z-[101] -translate-x-full transition-transform duration-300 shadow-2xl flex flex-col">
-    <div class="px-6 py-8 bg-gradient-to-br from-primary to-orange-400 flex flex-col text-white">
-        <div class="h-12 w-12 bg-white/20 rounded-full flex items-center justify-center mb-4">
-            <span translate="no" class="material-symbols-outlined text-2xl">person</span>
-        </div>
-        <h3 class="font-bold text-lg leading-tight">Meu Perfil</h3>
-        <p class="text-white/80 text-xs">Comprador / Motorista</p>
-    </div>
-    
-    <ul class="flex-1 py-4">
-        <li class="px-6 py-3 flex items-center gap-3 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer border-l-4 border-transparent hover:border-primary transition-colors"><span translate="no" class="material-symbols-outlined text-sm text-slate-400">home</span> Início</li>
-        <li class="px-6 py-3 flex items-center gap-3 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer border-l-4 border-transparent hover:border-primary transition-colors" onclick="document.getElementById('cotacoes-container').scrollIntoView({behavior: 'smooth'}); toggleSidebar();"><span translate="no" class="material-symbols-outlined text-sm text-slate-400">request_quote</span> Minhas Cotações</li>
-        <li class="px-6 py-3 flex items-center gap-3 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer border-l-4 border-transparent hover:border-primary transition-colors"><span translate="no" class="material-symbols-outlined text-sm text-slate-400">credit_card</span> Pagamentos</li>
-        <li class="px-6 py-3 flex items-center gap-3 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer border-l-4 border-transparent hover:border-primary transition-colors"><span translate="no" class="material-symbols-outlined text-sm text-slate-400">location_on</span> Endereços Ativos</li>
-    </ul>
-
-    <div class="p-6 border-t border-slate-100 dark:border-slate-800">
-        <button class="flex items-center gap-2 text-red-500 font-bold hover:text-red-600 transition-colors" onclick="localStorage.clear(); window.location.href='login.html'">
-            <span translate="no" class="material-symbols-outlined text-sm">logout</span> Sair da Plataforma
-        </button>
-    </div>
-</div>
-
-<script>
-    function toggleSidebar() {
-        const s = document.getElementById('sidebar');
-        const o = document.getElementById('sidebar-overlay');
-        if (s.classList.contains('-translate-x-full')) {
-            s.classList.remove('-translate-x-full');
-            o.classList.remove('hidden');
-            setTimeout(() => o.classList.remove('opacity-0'), 10);
-        } else {
-            s.classList.add('-translate-x-full');
-            o.classList.add('opacity-0');
-            setTimeout(() => o.classList.add('hidden'), 300);
-        }
     }
 </script>
 </body>
