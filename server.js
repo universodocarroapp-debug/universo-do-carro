@@ -1,22 +1,21 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const bodyParser = require('body-parser');
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
 const { createClient } = require('@supabase/supabase-js');
 
-// Configuração do Supabase 
+// Configuração do Supabase
 const supabaseUrl = 'https://xkiqkzrmavnqchqkyyvw.supabase.co';
-const supabaseKey = process.env.SUPABASE_SERVICE_KEY || '';
-
-// AVISO: A Service Role Key do Supabase deve começar com 'eyJ' (formato JWT)
-if (!supabaseKey.startsWith('eyJ')) {
-    console.warn('\n⚠️  ATENÇÃO: A SUPABASE_SERVICE_KEY parece inválida!');
-    console.warn('   A chave deve ser a "service_role" do painel Supabase > Settings > API.');
-    console.warn('   Ela começa com eyJ... (formato JWT). A atual começa com:', supabaseKey.substring(0, 10));
-    console.warn('   Defina a variável de ambiente: SET SUPABASE_SERVICE_KEY=eyJ...\n');
+const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
+if (!supabaseKey) {
+    console.error('\n❌  ERRO FATAL: SUPABASE_SERVICE_KEY não definida no .env!');
+    console.error('   Adicione a service_role key do painel Supabase > Settings > API.\n');
+    process.exit(1);
 }
 
 // Criando cliente isolado (sem persistir sessão para evitar que o login de um bloqueie o cadastro do outro)
@@ -24,13 +23,77 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
     auth: { persistSession: false, autoRefreshToken: false }
 });
 
-const upload = multer({ storage: multer.memoryStorage() });
+// Validação de tipo real de imagem por magic bytes (não confia no MIME declarado pelo cliente)
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+
+const IMAGE_SIGNATURES = [
+    { mime: 'image/jpeg', ext: 'jpg',  bytes: [0xFF, 0xD8, 0xFF] },
+    { mime: 'image/png',  ext: 'png',  bytes: [0x89, 0x50, 0x4E, 0x47] },
+    { mime: 'image/gif',  ext: 'gif',  bytes: [0x47, 0x49, 0x46, 0x38] },
+    { mime: 'image/webp', ext: 'webp', bytes: [0x52, 0x49, 0x46, 0x46],
+      extra: (b) => b[8] === 0x57 && b[9] === 0x45 && b[10] === 0x42 && b[11] === 0x50 },
+];
+
+function detectImageMime(buffer) {
+    for (const sig of IMAGE_SIGNATURES) {
+        if (sig.bytes.every((b, i) => buffer[i] === b)) {
+            if (!sig.extra || sig.extra(buffer)) return { mime: sig.mime, ext: sig.ext };
+        }
+    }
+    return null;
+}
+
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: MAX_FILE_SIZE } });
 const app = express();
 const port = 3000;
 
-app.use(cors());
+app.use(helmet());
+
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:3000').split(',').map(o => o.trim());
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+        callback(new Error('Origem não permitida pelo CORS'));
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    message: { error: 'Muitas tentativas de login. Aguarde 15 minutos.' },
+    standardHeaders: true,
+    legacyHeaders: false
+});
+
 app.use(bodyParser.json());
 app.use(express.static(__dirname));
+
+// Middlewares de autenticação — validam o JWT emitido pelo Supabase
+async function requireAuth(req, res, next) {
+    const header = req.headers['authorization'];
+    if (!header?.startsWith('Bearer ')) {
+        return res.status(401).json({ error: 'Autenticação necessária.' });
+    }
+    const { data: { user }, error } = await supabase.auth.getUser(header.slice(7));
+    if (error || !user) return res.status(401).json({ error: 'Token inválido ou expirado.' });
+    req.user = user;
+    next();
+}
+
+async function requireAdmin(req, res, next) {
+    const header = req.headers['authorization'];
+    if (!header?.startsWith('Bearer ')) {
+        return res.status(401).json({ error: 'Autenticação necessária.' });
+    }
+    const { data: { user }, error } = await supabase.auth.getUser(header.slice(7));
+    if (error || !user) return res.status(401).json({ error: 'Token inválido ou expirado.' });
+    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+    if (profile?.role !== 'admin') return res.status(403).json({ error: 'Acesso restrito a administradores.' });
+    req.user = user;
+    next();
+}
 
 app.post('/api/register', async (req, res) => {
     const { name, email, password, role, cnpj, tipo_empresa, cidade, telefone } = req.body;
@@ -92,7 +155,7 @@ app.post('/api/register', async (req, res) => {
     }
 });
 
-app.post('/api/login', async (req, res) => {
+app.post('/api/login', loginLimiter, async (req, res) => {
     const { email, password } = req.body;
 
     const { data: authData, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -102,10 +165,10 @@ app.post('/api/login', async (req, res) => {
 
     if (profError || !profile) return res.status(500).json({ error: 'Erro ao carregar seu perfil na nuvem.' });
 
-    res.json({ success: true, user: profile, role: profile.role });
+    res.json({ success: true, user: profile, role: profile.role, access_token: authData.session?.access_token });
 });
 
-app.get('/api/users', async (req, res) => {
+app.get('/api/users', requireAdmin, async (req, res) => {
     const { data, error } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
     if (error) return res.status(500).json({ error: 'Erro' });
     res.json({ users: data });
@@ -117,8 +180,13 @@ app.post('/api/cotacoes', upload.single('foto'), async (req, res) => {
 
     let foto_url = null;
     if (req.file) {
-        const fileName = `${Date.now()}_${req.file.originalname}`;
-        const { error: uploadError } = await supabase.storage.from('uploads').upload(fileName, req.file.buffer, { contentType: req.file.mimetype });
+        const detected = detectImageMime(req.file.buffer);
+        if (!detected) {
+            return res.status(400).json({ error: 'Tipo de arquivo não permitido. Envie JPEG, PNG, GIF ou WEBP.' });
+        }
+        // Filename gerado internamente — ignora originalname do cliente
+        const fileName = `${Date.now()}_${user_id}.${detected.ext}`;
+        const { error: uploadError } = await supabase.storage.from('uploads').upload(fileName, req.file.buffer, { contentType: detected.mime });
         if (!uploadError) {
             const { data: pubData } = supabase.storage.from('uploads').getPublicUrl(fileName);
             foto_url = pubData.publicUrl;
@@ -151,8 +219,11 @@ app.get('/api/cotacoes/minhas/:userId', async (req, res) => {
     res.json({ cotacoes: data });
 });
 
-app.post('/api/ofertas', async (req, res) => {
+app.post('/api/ofertas', requireAuth, async (req, res) => {
     const { cotacao_id, loja_id, valor, mensagem, garantia, peca_tipo } = req.body;
+    if (loja_id !== req.user.id) {
+        return res.status(403).json({ error: 'Não é permitido enviar ofertas em nome de outro usuário.' });
+    }
     const { data, error } = await supabase.from('ofertas').insert([{ cotacao_id, loja_id, valor, mensagem, garantia, peca_tipo }]).select();
     if (error) return res.status(500).json({ error: 'Erro' });
     res.json({ success: true, oferta_id: data[0].id });
@@ -165,7 +236,7 @@ app.get('/api/ofertas/:cotacao_id', async (req, res) => {
     res.json({ ofertas: mapped });
 });
 
-app.post('/api/cotacoes/aceitar', async (req, res) => {
+app.post('/api/cotacoes/aceitar', requireAuth, async (req, res) => {
     const { cotacao_id, oferta_id } = req.body;
     await supabase.from('cotacoes').update({ status: 'Concluído' }).eq('id', cotacao_id);
     const { data, error } = await supabase.from('ofertas').select(`profiles:loja_id (telefone)`).eq('id', oferta_id).single();
@@ -175,16 +246,22 @@ app.post('/api/cotacoes/aceitar', async (req, res) => {
 
 app.post('/api/forgot-password', async (req, res) => {
     const { email } = req.body;
-    // Gera um token mock para ambiente de desenvolvimento
-    const token_mock = Math.random().toString(36).substring(2, 10).toUpperCase();
-    console.log(`[FORGOT-PWD] Token mock para ${email}: ${token_mock}`);
-    // Tenta enviar email real via Supabase (pode falhar em dev sem SMTP configurado)
+    // Envia email de reset via Supabase
     await supabase.auth.resetPasswordForEmail(email).catch(() => {});
-    res.json({ success: true, message: 'Verifique seu e-mail.', token_mock });
+    res.json({ success: true, message: 'Verifique seu e-mail.' });
 });
 
 app.post('/api/reset-password', async (req, res) => {
     res.status(400).json({ error: 'Acesse pelo link enviado no e-mail.' });
+});
+
+// Handler de erros do multer (tamanho excedido) e erros gerais
+app.use((err, req, res, next) => {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(413).json({ error: `Arquivo muito grande. Limite: ${MAX_FILE_SIZE / 1024 / 1024} MB.` });
+    }
+    console.error(err);
+    res.status(500).json({ error: 'Erro interno no servidor.' });
 });
 
 app.listen(port, () => {

@@ -156,6 +156,11 @@
         } catch(e) {}
     }
 
+    function escHtml(s) {
+        if (s == null) return '';
+        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;');
+    }
+
     async function loadRequisicoes() {
         try {
             const res = await fetch('/api/cotacoes/todas');
@@ -169,55 +174,70 @@
                 }
                 maxCotacaoIdSeen = currentMax;
 
-                container.innerHTML = '';
+                container.replaceChildren();
                 data.cotacoes.forEach(cot => {
                     const dataFormatada = new Date(cot.created_at).toLocaleString('pt-BR');
-                    container.innerHTML += `
-                    <div class="group flex flex-col items-stretch justify-start rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden hover:border-primary/50 transition-colors">
-                        <div class="flex flex-col @xl:flex-row">
-                            <div class="w-full @xl:w-64 h-48 @xl:h-auto bg-center bg-no-repeat bg-cover shrink-0 relative" style="${cot.foto_url ? `background-image: url('${cot.foto_url}');` : 'background-color: #2a2a2a;'}">
-                                <div class="absolute p-3 z-10 w-full flex justify-between">
-                                    <span class="bg-primary text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider shadow-sm">Nova Requisição</span>
-                                </div>
-                                ${!cot.foto_url ? `
-                                <div class="flex items-center justify-center h-full text-slate-500">
-                                    <span translate="no" class="material-symbols-outlined text-4xl mt-4">inventory_2</span>
-                                </div>` : ''}
+                    const cotId = parseInt(cot.id, 10);
+                    const card = document.createElement('div');
+                    card.className = 'group flex flex-col items-stretch justify-start rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden hover:border-primary/50 transition-colors';
+                    card.innerHTML = `
+                    <div class="flex flex-col @xl:flex-row">
+                        <div class="w-full @xl:w-64 h-48 @xl:h-auto bg-center bg-no-repeat bg-cover shrink-0 relative" data-img>
+                            <div class="absolute p-3 z-10 w-full flex justify-between">
+                                <span class="bg-primary text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider shadow-sm">Nova Requisição</span>
                             </div>
-                            <div class="flex w-full grow flex-col justify-between p-5">
-                                <div class="flex flex-col @xl:flex-row justify-between gap-4">
-                                    <div>
-                                        <h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-tight mb-1">${cot.marca} ${cot.modelo} ${cot.ano}</h3>
-                                        <div class="flex flex-wrap gap-x-4 gap-y-1 text-slate-500 dark:text-slate-400 text-sm mb-3">
-                                            <div class="flex items-center gap-1"><span translate="no" class="material-symbols-outlined text-sm">tag</span> ${cot.chassi || 'Sem Chassi'}</div>
-                                            <div class="flex items-center gap-1"><span translate="no" class="material-symbols-outlined text-sm">schedule</span> ${dataFormatada}</div>
-                                            <div class="flex items-center gap-1 text-primary font-bold"><span translate="no" class="material-symbols-outlined text-sm">person</span> Cliente: ${cot.cliente_nome}</div>
-                                        </div>
-                                        <div class="space-y-1">
-                                            <p class="text-slate-700 dark:text-slate-300 text-sm font-medium">Peça e Descrição:</p>
-                                            <div class="flex flex-wrap gap-2">
-                                                <span class="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-sm text-primary font-bold">${cot.peca}</span>
-                                                <span class="text-sm text-slate-500">${cot.descricao || ''}</span>
-                                            </div>
+                            ${!cot.foto_url ? `
+                            <div class="flex items-center justify-center h-full text-slate-500">
+                                <span translate="no" class="material-symbols-outlined text-4xl mt-4">inventory_2</span>
+                            </div>` : ''}
+                        </div>
+                        <div class="flex w-full grow flex-col justify-between p-5">
+                            <div class="flex flex-col @xl:flex-row justify-between gap-4">
+                                <div>
+                                    <h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-tight mb-1">${escHtml(cot.marca)} ${escHtml(cot.modelo)} ${escHtml(cot.ano)}</h3>
+                                    <div class="flex flex-wrap gap-x-4 gap-y-1 text-slate-500 dark:text-slate-400 text-sm mb-3">
+                                        <div class="flex items-center gap-1"><span translate="no" class="material-symbols-outlined text-sm">tag</span> ${escHtml(cot.chassi || 'Sem Chassi')}</div>
+                                        <div class="flex items-center gap-1"><span translate="no" class="material-symbols-outlined text-sm">schedule</span> ${escHtml(dataFormatada)}</div>
+                                        <div class="flex items-center gap-1 text-primary font-bold"><span translate="no" class="material-symbols-outlined text-sm">person</span> Cliente: ${escHtml(cot.cliente_nome)}</div>
+                                    </div>
+                                    <div class="space-y-1">
+                                        <p class="text-slate-700 dark:text-slate-300 text-sm font-medium">Peça e Descrição:</p>
+                                        <div class="flex flex-wrap gap-2">
+                                            <span class="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-sm text-primary font-bold">${escHtml(cot.peca)}</span>
+                                            <span class="text-sm text-slate-500">${escHtml(cot.descricao || '')}</span>
                                         </div>
                                     </div>
-                                    <div class="flex @xl:flex-col items-center @xl:items-end justify-between @xl:justify-start gap-3 mt-4 @xl:mt-0">
-                                        <div class="text-right">
-                                            <p class="text-slate-400 text-[10px] uppercase font-bold">ID da Requisição</p>
-                                            <p class="text-slate-900 dark:text-white font-mono font-bold">#QT-${String(cot.id).padStart(4,'0')}</p>
-                                        </div>
-                                        <button onclick="abrirModalOferta(${cot.id})" class="flex items-center justify-center gap-2 rounded-lg h-10 px-6 bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-all shadow-md shadow-primary/20 mt-2">
-                                            <span translate="no" class="material-symbols-outlined text-sm">send</span> Fazer Oferta
-                                        </button>
+                                </div>
+                                <div class="flex @xl:flex-col items-center @xl:items-end justify-between @xl:justify-start gap-3 mt-4 @xl:mt-0">
+                                    <div class="text-right">
+                                        <p class="text-slate-400 text-[10px] uppercase font-bold">ID da Requisição</p>
+                                        <p class="text-slate-900 dark:text-white font-mono font-bold">#QT-${String(cotId).padStart(4,'0')}</p>
                                     </div>
+                                    <button data-cotacao-id="${cotId}" class="flex items-center justify-center gap-2 rounded-lg h-10 px-6 bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-all shadow-md shadow-primary/20 mt-2">
+                                        <span translate="no" class="material-symbols-outlined text-sm">send</span> Fazer Oferta
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                     `;
+                    // Injeta foto via propriedade DOM para evitar CSS injection
+                    if (cot.foto_url) {
+                        card.querySelector('[data-img]').style.backgroundImage = `url("${String(cot.foto_url).replace(/"/g, '%22')}")`;
+                    } else {
+                        card.querySelector('[data-img]').style.backgroundColor = '#2a2a2a';
+                    }
+                    // Event listener seguro em vez de onclick inline com dado do servidor
+                    card.querySelector('[data-cotacao-id]').addEventListener('click', function() {
+                        abrirModalOferta(parseInt(this.dataset.cotacaoId, 10));
+                    });
+                    container.appendChild(card);
                 });
             } else {
-                container.innerHTML = '<div class="text-sm text-center text-slate-500 py-4">Nenhuma requisição aguardando.</div>';
+                const msg = document.createElement('div');
+                msg.className = 'text-sm text-center text-slate-500 py-4';
+                msg.textContent = 'Nenhuma requisição aguardando.';
+                container.replaceChildren(msg);
             }
         } catch(e) {
             console.error(e);
@@ -260,9 +280,13 @@
         document.getElementById('btn-enviar-oferta').innerText = "Enviando...";
 
         try {
+            const authToken = localStorage.getItem('authToken');
             const res = await fetch('/api/ofertas', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                },
                 body: JSON.stringify({
                     cotacao_id: currentCotacaoModalId,
                     loja_id: lojaId,

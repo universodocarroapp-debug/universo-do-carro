@@ -214,6 +214,7 @@ tailwind.config = { darkMode: "class", theme: { extend: { colors: { "primary": "
                 
                 if (data.success) {
                     if (data.user && data.user.id) localStorage.setItem('userId', data.user.id);
+                    if (data.access_token) localStorage.setItem('authToken', data.access_token);
                     if (data.role === 'admin') {
                         localStorage.setItem('isAdmin', 'true');
                         window.location.href = 'admin.html';

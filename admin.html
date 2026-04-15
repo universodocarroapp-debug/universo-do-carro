@@ -552,6 +552,11 @@
         }, 300);
     }
 
+    function escHtml(s) {
+        if (s == null) return '';
+        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;');
+    }
+
     /* Toast Notifications System - Tailwind Version */
     function showToast(title, message, type = 'success') {
         let container = document.getElementById('toast-container');
@@ -567,16 +572,31 @@
         
         const icon = type === 'success' ? 'check_circle' : 'warning';
         
-        toast.innerHTML = `
-            <span translate="no" class="material-symbols-outlined mt-0.5">${icon}</span>
-            <div class="flex-1">
-                <h4 class="text-sm font-bold">${title}</h4>
-                <p class="text-xs mt-1 opacity-90">${message}</p>
-            </div>
-            <button class="opacity-70 hover:opacity-100" onclick="this.parentElement.remove()">
-                <span translate="no" class="material-symbols-outlined text-[18px]">close</span>
-            </button>
-        `;
+        const iconSpan = document.createElement('span');
+        iconSpan.setAttribute('translate', 'no');
+        iconSpan.className = 'material-symbols-outlined mt-0.5';
+        iconSpan.textContent = icon;
+
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'flex-1';
+        const titleEl = document.createElement('h4');
+        titleEl.className = 'text-sm font-bold';
+        titleEl.textContent = title;
+        const msgEl = document.createElement('p');
+        msgEl.className = 'text-xs mt-1 opacity-90';
+        msgEl.textContent = message;
+        contentDiv.append(titleEl, msgEl);
+
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'opacity-70 hover:opacity-100';
+        closeBtn.addEventListener('click', () => toast.remove());
+        const closeIcon = document.createElement('span');
+        closeIcon.setAttribute('translate', 'no');
+        closeIcon.className = 'material-symbols-outlined text-[18px]';
+        closeIcon.textContent = 'close';
+        closeBtn.appendChild(closeIcon);
+
+        toast.append(iconSpan, contentDiv, closeBtn);
         
         container.appendChild(toast);
         
@@ -592,7 +612,10 @@
     /* Carregar dados da API ao iniciar */
     async function carregarUsuarios() {
         try {
-            const res = await fetch('/api/users');
+            const authToken = localStorage.getItem('authToken');
+            const res = await fetch('/api/users', {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
             const data = await res.json();
             if (data.users) {
                 renderUsuarios(data.users);
@@ -636,27 +659,30 @@
             dataRow.innerHTML = `
                 <td class="px-6 py-4 whitespace-nowrap">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-xs font-bold text-slate-700 dark:text-slate-300">${initials}</div>
+                        <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-xs font-bold text-slate-700 dark:text-slate-300">${escHtml(initials)}</div>
                         <div>
-                            <p class="text-sm font-bold text-slate-900 dark:text-white">${user.name}</p>
-                            <p class="text-xs text-slate-500">${user.email}</p>
+                            <p class="text-sm font-bold text-slate-900 dark:text-white">${escHtml(user.name)}</p>
+                            <p class="text-xs text-slate-500">${escHtml(user.email)}</p>
                         </div>
                     </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-700 dark:text-slate-300 capitalize">${roleTxt}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-700 dark:text-slate-300 capitalize">${escHtml(roleTxt)}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="px-2 py-1 text-[10px] font-bold uppercase rounded-full border ${statusClass}">${user.status || 'Ativo'}</span>
+                    <span class="px-2 py-1 text-[10px] font-bold uppercase rounded-full border ${statusClass}">${escHtml(user.status || 'Ativo')}</span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                     <span class="text-xs font-bold text-primary flex items-center gap-1"><span translate="no" class="material-symbols-outlined text-[16px]">info</span> Nova Conta</span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">${dataIso}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">${escHtml(dataIso)}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-right">
                     <div class="flex justify-end gap-1.5">
-                        <button onclick="openModal('Editar Permissões: ${user.name}')" class="p-1.5 text-slate-400 hover:text-white hover:bg-primary/80 rounded-lg transition-colors" title="Editar Usuário"><span translate="no" class="material-symbols-outlined text-[18px]">edit</span></button>
+                        <button data-user-name="${escHtml(user.name)}" class="p-1.5 text-slate-400 hover:text-white hover:bg-primary/80 rounded-lg transition-colors" title="Editar Usuário"><span translate="no" class="material-symbols-outlined text-[18px]">edit</span></button>
                     </div>
                 </td>
             `;
+            dataRow.querySelector('button[data-user-name]').addEventListener('click', function() {
+                openModal('Editar Permissões: ' + this.dataset.userName);
+            });
             tbody.appendChild(dataRow);
         });
 

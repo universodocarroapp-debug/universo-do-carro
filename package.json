@@ -7,7 +7,12 @@
     "start": "node server.js",
     "dev": "node server.js"
   },
-  "keywords": ["autopeças", "pwa", "whatsapp", "supabase"],
+  "keywords": [
+    "autopeças",
+    "pwa",
+    "whatsapp",
+    "supabase"
+  ],
   "author": "Universo do Carro",
   "license": "ISC",
   "type": "commonjs",
@@ -17,6 +22,8 @@
     "cors": "^2.8.6",
     "dotenv": "^16.4.5",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.3.2",
+    "helmet": "^8.1.0",
     "multer": "^2.1.1"
   }
 }
