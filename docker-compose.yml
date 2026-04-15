@@ -1,0 +1,29 @@
+services:
+  app:
+    build: .
+    container_name: universo-do-carro
+    restart: unless-stopped
+    env_file: .env
+    networks:
+      - traefik-net
+    labels:
+      # Habilita Traefik para este container
+      - "traefik.enable=true"
+
+      # Rota HTTPS com SSL automático via Let's Encrypt
+      - "traefik.http.routers.universo.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.universo.entrypoints=websecure"
+      - "traefik.http.routers.universo.tls.certresolver=letsencrypt"
+      - "traefik.http.services.universo.loadbalancer.server.port=3000"
+
+      # Redireciona HTTP → HTTPS
+      - "traefik.http.routers.universo-http.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.universo-http.entrypoints=web"
+      - "traefik.http.routers.universo-http.middlewares=universo-https@docker"
+      - "traefik.http.middlewares.universo-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.universo-https.redirectscheme.permanent=true"
+
+networks:
+  traefik-net:
+    external: true
+    name: ${TRAEFIK_NETWORK:-traefik-net}
