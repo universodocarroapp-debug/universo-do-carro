@@ -89,6 +89,10 @@
 <span translate="no" class="material-symbols-outlined text-[20px]">show_chart</span>
                         O Ecossistema
                     </a>
+<a class="flex items-center gap-2 border-b-2 border-transparent text-slate-500 hover:text-primary dark:hover:text-primary px-1 py-4 text-sm font-medium whitespace-nowrap transition-colors" href="#metricas">
+<span translate="no" class="material-symbols-outlined text-[20px]">leaderboard</span>
+                        Métricas Cotações
+                    </a>
 </div>
 </div>
 </nav>
@@ -444,6 +448,100 @@
 <span>Jan</span><span>Fev</span><span>Mar</span><span>Abr</span><span>Mai</span><span>Jun</span>
 </div>
 </div>
+
+<!-- ═══════════════════════════════════════════════════
+     SEÇÃO: MÉTRICAS DE COTAÇÕES POR AUTOPEÇA
+     ═══════════════════════════════════════════════════ -->
+<div id="metricas" class="mt-8 scroll-mt-24">
+
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <div>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <span translate="no" class="material-symbols-outlined text-primary">leaderboard</span>
+                Métricas de Cotações por Autopeça
+            </h3>
+            <p class="text-sm text-slate-500 mt-1">Ranking de engajamento das lojas com base nas cotações recebidas</p>
+        </div>
+        <button onclick="carregarMetricas()" class="flex items-center gap-2 text-sm font-bold text-primary hover:text-[#E65100] transition-colors px-3 py-2 rounded-lg hover:bg-primary/5 border border-primary/20">
+            <span translate="no" class="material-symbols-outlined text-[18px]">refresh</span> Atualizar
+        </button>
+    </div>
+
+    <!-- Cards de resumo -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+        <div class="bg-white dark:bg-[#0A0A0A] p-5 rounded-xl border border-slate-200 dark:border-white/5 shadow-lg flex items-center justify-between group hover:border-primary/30 transition-colors">
+            <div>
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Total de Cotações</p>
+                <p class="text-3xl font-black text-slate-900 dark:text-white" id="met-total-cotacoes">—</p>
+                <p class="text-xs text-slate-400 mt-1">na plataforma</p>
+            </div>
+            <div class="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500">
+                <span translate="no" class="material-symbols-outlined">receipt_long</span>
+            </div>
+        </div>
+        <div class="bg-white dark:bg-[#0A0A0A] p-5 rounded-xl border border-primary/30 shadow-[0_0_15px_rgba(255,90,0,0.08)] flex items-center justify-between group hover:border-primary/50 transition-colors relative overflow-hidden">
+            <div class="absolute inset-0 bg-primary/3 pointer-events-none"></div>
+            <div class="relative">
+                <p class="text-xs font-bold text-primary uppercase tracking-wider mb-1">Autopeças Cadastradas</p>
+                <p class="text-3xl font-black text-slate-900 dark:text-white" id="met-total-lojas">—</p>
+                <p class="text-xs text-slate-400 mt-1">no ranking</p>
+            </div>
+            <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary relative">
+                <span translate="no" class="material-symbols-outlined">storefront</span>
+            </div>
+        </div>
+        <div class="bg-white dark:bg-[#0A0A0A] p-5 rounded-xl border border-slate-200 dark:border-white/5 shadow-lg flex items-center justify-between group hover:border-green-500/30 transition-colors">
+            <div>
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Média Taxa de Resposta</p>
+                <p class="text-3xl font-black text-slate-900 dark:text-white" id="met-media-taxa">—</p>
+                <p class="text-xs text-slate-400 mt-1">entre todas as lojas</p>
+            </div>
+            <div class="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center text-green-500">
+                <span translate="no" class="material-symbols-outlined">percent</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela de ranking -->
+    <div class="bg-white dark:bg-[#0A0A0A] rounded-xl border border-slate-200 dark:border-white/5 shadow-lg overflow-hidden">
+        <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            <h4 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <span translate="no" class="material-symbols-outlined text-primary text-[20px]">emoji_events</span>
+                Ranking por Taxa de Resposta
+            </h4>
+            <span class="text-xs text-slate-500" id="met-atualizado-em"></span>
+        </div>
+
+        <!-- Estado de carregamento -->
+        <div id="met-loading" class="flex flex-col items-center justify-center py-16 gap-3">
+            <div class="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+            <p class="text-sm text-slate-500">Calculando métricas...</p>
+        </div>
+
+        <!-- Estado vazio -->
+        <div id="met-empty" class="hidden flex-col items-center justify-center py-16 gap-3 text-center px-6">
+            <span translate="no" class="material-symbols-outlined text-4xl text-slate-300">storefront</span>
+            <p class="text-sm font-bold text-slate-500">Nenhuma autopeça cadastrada ainda</p>
+            <p class="text-xs text-slate-400">Quando lojas se cadastrarem, o ranking aparecerá aqui.</p>
+        </div>
+
+        <div class="overflow-x-auto" id="met-table-wrap" style="display:none">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="bg-slate-50 dark:bg-slate-800/50">
+                        <th class="px-5 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider w-12">#</th>
+                        <th class="px-5 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Autopeça</th>
+                        <th class="px-5 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Cotações Recebidas</th>
+                        <th class="px-5 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Respondidas</th>
+                        <th class="px-5 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[180px]">Taxa de Resposta</th>
+                    </tr>
+                </thead>
+                <tbody id="met-tbody" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
 </main>
 <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-6">
 <div class="max-w-7xl mx-auto px-4 text-center">
@@ -692,8 +790,96 @@
         if (document.getElementById('count-motoristas')) document.getElementById('count-motoristas').innerText = cxMotoristas;
     }
 
+    async function carregarMetricas() {
+        const loading = document.getElementById('met-loading');
+        const empty   = document.getElementById('met-empty');
+        const wrap    = document.getElementById('met-table-wrap');
+        const tbody   = document.getElementById('met-tbody');
+
+        loading.style.display = 'flex';
+        empty.classList.add('hidden');
+        wrap.style.display = 'none';
+
+        try {
+            const authToken = localStorage.getItem('authToken');
+            const res = await fetch('/api/admin/metricas-autopecas', {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+            const data = await res.json();
+
+            if (!res.ok) { showToast('Erro', data.error || 'Falha ao carregar métricas.', 'error'); loading.style.display = 'none'; return; }
+
+            document.getElementById('met-total-cotacoes').textContent = data.total_cotacoes.toLocaleString('pt-BR');
+            document.getElementById('met-total-lojas').textContent    = data.total_lojas.toLocaleString('pt-BR');
+            document.getElementById('met-media-taxa').textContent     = data.media_taxa_resposta + '%';
+            document.getElementById('met-atualizado-em').textContent  = 'Atualizado às ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+            loading.style.display = 'none';
+
+            if (!data.ranking || data.ranking.length === 0) {
+                empty.classList.remove('hidden');
+                empty.style.display = 'flex';
+                return;
+            }
+
+            tbody.innerHTML = '';
+            data.ranking.forEach((loja, i) => {
+                const pos = i + 1;
+                let medalha = '';
+                if (pos === 1) medalha = '<span class="text-yellow-500 font-black">🥇</span>';
+                else if (pos === 2) medalha = '<span class="text-slate-400 font-black">🥈</span>';
+                else if (pos === 3) medalha = '<span class="text-amber-600 font-black">🥉</span>';
+
+                let taxaColor = 'bg-slate-300 dark:bg-slate-600';
+                let taxaTextColor = 'text-slate-500';
+                if (loja.taxa_resposta >= 70) { taxaColor = 'bg-green-500'; taxaTextColor = 'text-green-600 dark:text-green-400'; }
+                else if (loja.taxa_resposta >= 40) { taxaColor = 'bg-primary shadow-[0_0_8px_rgba(255,90,0,0.4)]'; taxaTextColor = 'text-primary'; }
+                else if (loja.taxa_resposta >= 10) { taxaColor = 'bg-yellow-500'; taxaTextColor = 'text-yellow-600 dark:text-yellow-400'; }
+                else { taxaColor = 'bg-red-400'; taxaTextColor = 'text-red-500'; }
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors';
+                tr.innerHTML = `
+                    <td class="px-5 py-4 whitespace-nowrap">
+                        <span class="text-sm font-black text-slate-400 dark:text-slate-500">${medalha || ('<span class="text-slate-500">' + pos + '</span>')}</span>
+                    </td>
+                    <td class="px-5 py-4 whitespace-nowrap">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-black shrink-0">${escHtml(loja.nome ? loja.nome.substring(0,2).toUpperCase() : 'AP')}</div>
+                            <div>
+                                <p class="text-sm font-bold text-slate-900 dark:text-white">${escHtml(loja.nome || '—')}</p>
+                                <p class="text-xs text-slate-400">${escHtml(loja.cidade || '—')}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-5 py-4 whitespace-nowrap text-center">
+                        <span class="text-sm font-bold text-slate-700 dark:text-slate-300">${loja.cotacoes_recebidas.toLocaleString('pt-BR')}</span>
+                    </td>
+                    <td class="px-5 py-4 whitespace-nowrap text-center">
+                        <span class="text-sm font-black ${loja.orcamentos_respondidos > 0 ? 'text-primary' : 'text-slate-400'}">${loja.orcamentos_respondidos.toLocaleString('pt-BR')}</span>
+                    </td>
+                    <td class="px-5 py-4 whitespace-nowrap min-w-[180px]">
+                        <div class="flex items-center gap-3">
+                            <div class="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
+                                <div class="${taxaColor} h-2 rounded-full transition-all duration-500" style="width:${loja.taxa_resposta}%"></div>
+                            </div>
+                            <span class="text-sm font-black ${taxaTextColor} w-10 text-right shrink-0">${loja.taxa_resposta}%</span>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            wrap.style.display = 'block';
+        } catch(e) {
+            loading.style.display = 'none';
+            showToast('Erro de Conexão', 'Não foi possível carregar as métricas.', 'error');
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         carregarUsuarios();
+        carregarMetricas();
     });
 </script>
 </div>

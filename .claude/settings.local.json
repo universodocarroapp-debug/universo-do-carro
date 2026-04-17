@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -n \"localStorage\\\\|sessionStorage\" /c/Users/Eduardo/universo-do-carro/*.html)",
+      "Bash(grep -n \"onclick.*location\" /c/Users/Eduardo/universo-do-carro/*.html)",
+      "Bash(grep -n \"innerHTML\\\\|innerText\" /c/Users/Eduardo/universo-do-carro/*.html)",
+      "Bash(grep:*)",
+      "Bash(npm install *)",
+      "Bash(ssh *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)"
+    ]
+  }
+}

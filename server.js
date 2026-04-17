@@ -244,6 +244,37 @@ app.post('/api/cotacoes/aceitar', requireAuth, async (req, res) => {
     res.json({ success: true, telefone: data.profiles?.telefone });
 });
 
+app.get('/api/admin/metricas-autopecas', requireAdmin, async (req, res) => {
+    const [cotacoesRes, lojasRes, ofertasRes] = await Promise.all([
+        supabase.from('cotacoes').select('*', { count: 'exact', head: true }),
+        supabase.from('profiles').select('id, name, cidade').eq('role', 'empresa').eq('tipo_empresa', 'autopecas'),
+        supabase.from('ofertas').select('loja_id, cotacao_id')
+    ]);
+
+    const total = cotacoesRes.count || 0;
+    const lojas = lojasRes.data || [];
+    const ofertas = ofertasRes.data || [];
+
+    // Conta cotações distintas respondidas por loja
+    const respostasPorLoja = {};
+    ofertas.forEach(o => {
+        if (!respostasPorLoja[o.loja_id]) respostasPorLoja[o.loja_id] = new Set();
+        respostasPorLoja[o.loja_id].add(o.cotacao_id);
+    });
+
+    const ranking = lojas.map(loja => {
+        const respondidas = respostasPorLoja[loja.id]?.size || 0;
+        const taxa = total > 0 ? Math.round((respondidas / total) * 100) : 0;
+        return { id: loja.id, nome: loja.name, cidade: loja.cidade, cotacoes_recebidas: total, orcamentos_respondidos: respondidas, taxa_resposta: taxa };
+    }).sort((a, b) => b.taxa_resposta - a.taxa_resposta || b.orcamentos_respondidos - a.orcamentos_respondidos);
+
+    const media_taxa = ranking.length > 0
+        ? Math.round(ranking.reduce((s, l) => s + l.taxa_resposta, 0) / ranking.length)
+        : 0;
+
+    res.json({ total_cotacoes: total, total_lojas: lojas.length, media_taxa_resposta: media_taxa, ranking });
+});
+
 app.post('/api/forgot-password', async (req, res) => {
     const { email } = req.body;
     // Envia email de reset via Supabase
