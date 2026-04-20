@@ -3,11 +3,28 @@
 <html lang="pt-BR" class="dark"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<style>html { visibility: hidden; }</style>
 <script>
-    // Trava de segurança para evitar acesso direto
-    if (localStorage.getItem('isAdmin') !== 'true') {
-        window.location.href = 'login.html';
-    }
+    // Guarda de página: verifica JWT e role=admin no servidor antes de exibir qualquer conteúdo.
+    // Nunca confia em dados do localStorage para decidir acesso.
+    (async function () {
+        const token = localStorage.getItem('authToken');
+        if (!token) { window.location.replace('login.html'); return; }
+        try {
+            const r = await fetch('/api/admin/me', {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            if (r.ok) {
+                document.documentElement.style.visibility = 'visible';
+            } else {
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('userId');
+                window.location.replace('login.html');
+            }
+        } catch (e) {
+            window.location.replace('login.html');
+        }
+    })();
 </script>
 <meta name="theme-color" content="#FF5A00"/>
 <link rel="manifest" href="manifest.json"/>
@@ -66,7 +83,7 @@
 <button class="p-2 text-slate-500 hover:text-primary dark:hover:text-primary hover:bg-primary/10 rounded-full transition-colors" onclick="showToast('Notificações', 'Você não tem novas notificações.', 'success')">
 <span translate="no" class="material-symbols-outlined">notifications</span>
 </button>
-<div onclick="localStorage.removeItem('isAdmin'); window.location.href='login.html'" title="Sair / Logout" class="h-8 w-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:bg-red-500 hover:text-white transition-all shadow-sm cursor-pointer">
+<div onclick="localStorage.removeItem('authToken'); localStorage.removeItem('userId'); window.location.href='login.html'" title="Sair / Logout" class="h-8 w-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:bg-red-500 hover:text-white transition-all shadow-sm cursor-pointer">
                             <span translate="no" class="material-symbols-outlined" style="font-size: 16px;">logout</span>
                         </div>
 </div>

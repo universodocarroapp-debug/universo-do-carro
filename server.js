@@ -183,6 +183,10 @@ app.post('/api/login', loginLimiter, async (req, res) => {
     res.json({ success: true, user: profile, role: profile.role, access_token: authData.session?.access_token });
 });
 
+app.get('/api/admin/me', requireAdmin, (req, res) => {
+    res.json({ ok: true, id: req.user.id });
+});
+
 app.get('/api/users', requireAdmin, async (req, res) => {
     const { data, error } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
     if (error) return res.status(500).json({ error: 'Erro' });

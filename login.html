@@ -217,13 +217,10 @@ tailwind.config = { darkMode: "class", theme: { extend: { colors: { "primary": "
                     if (data.access_token) localStorage.setItem('authToken', data.access_token);
                     const role = (data.user && data.user.role) ? data.user.role : data.role;
                     if (role === 'admin') {
-                        localStorage.setItem('isAdmin', 'true');
                         window.location.href = 'admin.html';
                     } else if (role === 'empresa') {
-                        localStorage.removeItem('isAdmin');
                         window.location.href = 'loja.html';
                     } else {
-                        localStorage.removeItem('isAdmin');
                         window.location.href = 'comprador.html';
                     }
                 } else {
