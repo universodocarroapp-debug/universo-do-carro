@@ -47,7 +47,22 @@ const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: MAX
 const app = express();
 const port = 3000;
 
-app.use(helmet());
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc:     ["'self'"],
+            scriptSrc:      ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com"],
+            styleSrc:       ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+            fontSrc:        ["'self'", "https://fonts.gstatic.com", "data:"],
+            imgSrc:         ["'self'", "data:", "https://xkiqkzrmavnqchqkyyvw.supabase.co"],
+            connectSrc:     ["'self'", "https://xkiqkzrmavnqchqkyyvw.supabase.co", "wss://xkiqkzrmavnqchqkyyvw.supabase.co"],
+            formAction:     ["'self'"],
+            frameAncestors: ["'none'"],
+            objectSrc:      ["'none'"],
+            baseUri:        ["'self'"],
+        },
+    },
+}));
 
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:3000').split(',').map(o => o.trim());
 app.use(cors({
