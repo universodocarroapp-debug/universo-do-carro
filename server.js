@@ -24,7 +24,7 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
 });
 
 // Validação de tipo real de imagem por magic bytes (não confia no MIME declarado pelo cliente)
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
 const IMAGE_SIGNATURES = [
     { mime: 'image/jpeg', ext: 'jpg',  bytes: [0xFF, 0xD8, 0xFF] },
@@ -74,6 +74,15 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
+// Rate limit geral — 100 req/min por IP (aplicado antes do body parser para rejeitar cedo)
+const generalLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 100,
+    message: { error: 'Muitas requisições. Tente novamente em instantes.' },
+    standardHeaders: true,
+    legacyHeaders: false
+});
+
 const loginLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 10,
@@ -82,7 +91,8 @@ const loginLimiter = rateLimit({
     legacyHeaders: false
 });
 
-app.use(bodyParser.json());
+app.use(generalLimiter);
+app.use(bodyParser.json({ limit: '1mb' }));
 app.use(express.static(__dirname));
 
 // Middlewares de autenticação — validam o JWT emitido pelo Supabase
@@ -305,10 +315,13 @@ app.post('/api/reset-password', async (req, res) => {
     res.status(400).json({ error: 'Acesse pelo link enviado no e-mail.' });
 });
 
-// Handler de erros do multer (tamanho excedido) e erros gerais
+// Handler de erros de tamanho e erros gerais
 app.use((err, req, res, next) => {
     if (err.code === 'LIMIT_FILE_SIZE') {
         return res.status(413).json({ error: `Arquivo muito grande. Limite: ${MAX_FILE_SIZE / 1024 / 1024} MB.` });
+    }
+    if (err.type === 'entity.too.large') {
+        return res.status(413).json({ error: 'Requisição muito grande. Limite: 1 MB.' });
     }
     console.error(err);
     res.status(500).json({ error: 'Erro interno no servidor.' });
