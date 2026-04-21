@@ -370,8 +370,8 @@
 
   <!-- Tabs -->
   <div class="tabs-wrapper" id="auth-tabs">
-    <button class="tab-btn tab-active" onclick="toggleAuthMode('login', this)">Entrar</button>
-    <button class="tab-btn" onclick="toggleAuthMode('register', this)">Cadastrar-se</button>
+    <button id="tab-login" class="tab-btn tab-active" onclick="switchTab('login')">Entrar</button>
+    <button id="tab-cadastrar" class="tab-btn" onclick="switchTab('register')">Cadastrar-se</button>
   </div>
 
   <!-- Form -->
@@ -455,7 +455,25 @@
       <div class="input-wrap">
         <span class="input-icon material-symbols-outlined">lock</span>
         <input id="password-input" class="field-input" type="password" autocomplete="new-password" placeholder="Digite sua senha" value="" style="padding-right: 2.75rem;"/>
-        <span class="input-icon-right material-symbols-outlined" onclick="const p=document.getElementById('password-input');p.type=p.type==='password'?'text':'password';this.textContent=p.type==='password'?'visibility':'visibility_off';">visibility</span>
+        <button type="button" class="input-icon-right pwd-toggle" onclick="togglePasswordVisibility('password-input', this)" aria-label="Mostrar/ocultar senha" style="background:none;border:none;padding:0;display:flex;align-items:center;">
+          <svg id="eye-icon-password" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Confirmar Senha (register only) -->
+    <div class="field-wrap" id="field-confirm-password">
+      <span class="field-label">Confirmar senha</span>
+      <div class="input-wrap">
+        <span class="input-icon material-symbols-outlined">lock</span>
+        <input id="confirm-password-input" class="field-input" type="password" autocomplete="new-password" placeholder="Repita sua senha" style="padding-right: 2.75rem;"/>
+        <button type="button" class="input-icon-right pwd-toggle" onclick="togglePasswordVisibility('confirm-password-input', this)" aria-label="Mostrar/ocultar senha" style="background:none;border:none;padding:0;display:flex;align-items:center;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
       </div>
     </div>
 
@@ -480,7 +498,7 @@
     <button class="link-subtle" onclick="simularEsqueciSenha()">Esqueceu a senha?</button>
     <div style="display:flex;align-items:center;gap:0.25rem;">
       <span class="link-subtle">Novo por aqui?</span>
-      <button class="link-brand" onclick="toggleAuthMode('register', document.querySelectorAll('#auth-tabs .tab-btn')[1])">Criar conta</button>
+      <button class="link-brand" onclick="switchTab('register')">Criar conta</button>
     </div>
   </div>
 
@@ -493,23 +511,39 @@
     let currentMode = 'login';
     let currentRole = 'motorista';
 
-    function toggleAuthMode(mode, btn) {
+    function switchTab(mode) {
+        toggleAuthMode(mode);
+    }
+
+    function toggleAuthMode(mode) {
         currentMode = mode;
+        const isReg = mode === 'register';
 
-        document.querySelectorAll('#auth-tabs .tab-btn').forEach(t => t.classList.remove('tab-active'));
-        btn.classList.add('tab-active');
+        // Atualiza visual das abas
+        document.getElementById('tab-login').classList.toggle('tab-active', !isReg);
+        document.getElementById('tab-cadastrar').classList.toggle('tab-active', isReg);
 
-        const isReg = currentMode === 'register';
-
-        setVisible('role-selector',  isReg);
-        setVisible('field-name',     isReg);
-        setVisible('field-telefone', isReg);
-        setVisible('promo-banner',   !isReg);
-        setVisible('forgot-pwd',     !isReg);
+        // Mostra/oculta campos
+        setVisible('role-selector',         isReg);
+        setVisible('field-name',            isReg);
+        setVisible('field-telefone',        isReg);
+        setVisible('field-confirm-password',isReg);
+        setVisible('promo-banner',          !isReg);
+        setVisible('forgot-pwd',            !isReg);
 
         document.getElementById('main-action-btn').textContent = isReg ? 'CRIAR MINHA CONTA' : 'ENTRAR NA PLATAFORMA';
 
         updateRoleFields();
+    }
+
+    function togglePasswordVisibility(inputId, btn) {
+        const input = document.getElementById(inputId);
+        const isHidden = input.type === 'password';
+        input.type = isHidden ? 'text' : 'password';
+        // Troca SVG: olho aberto ↔ olho fechado
+        btn.querySelector('svg').innerHTML = isHidden
+            ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
+            : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
     }
 
     function setRole(role, btn) {
@@ -568,7 +602,9 @@
         } else {
             const name     = document.getElementById('name-input').value.trim();
             const telefone = document.getElementById('telefone-input').value.trim();
+            const confirmPwd = document.getElementById('confirm-password-input').value.trim();
             if (!telefone) { alert('Telefone/WhatsApp é obrigatório.'); btn.classList.remove('loading'); btn.disabled = false; return; }
+            if (pwd !== confirmPwd) { alert('As senhas não coincidem. Verifique e tente novamente.'); btn.classList.remove('loading'); btn.disabled = false; return; }
 
             const payload = { name, email, password: pwd, role: currentRole, telefone };
 
