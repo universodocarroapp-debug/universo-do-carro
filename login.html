@@ -354,8 +354,8 @@
 
   <!-- Tabs -->
   <div class="tabs-wrapper" id="auth-tabs">
-    <button id="tab-login" class="tab-btn tab-active" onclick="switchTab('login')">Entrar</button>
-    <button id="tab-cadastrar" class="tab-btn" onclick="switchTab('register')">Cadastrar-se</button>
+    <button id="tab-login" class="tab-btn tab-active">Entrar</button>
+    <button id="tab-cadastrar" class="tab-btn">Cadastrar-se</button>
   </div>
 
   <!-- Form -->
@@ -363,8 +363,8 @@
 
     <!-- Role selector (register only) -->
     <div id="role-selector" class="role-selector" style="display:none;">
-      <button class="role-btn role-active" id="btn-motorista" onclick="setRole('motorista', this)">Sou Motorista</button>
-      <button class="role-btn" id="btn-empresa" onclick="setRole('empresa', this)">Sou Empresa</button>
+      <button class="role-btn role-active" id="btn-motorista">Sou Motorista</button>
+      <button class="role-btn" id="btn-empresa">Sou Empresa</button>
     </div>
 
     <!-- Nome (register) -->
@@ -439,8 +439,8 @@
       <div class="input-wrap">
         <span class="input-icon material-symbols-outlined">lock</span>
         <input id="password-input" class="field-input" type="password" autocomplete="new-password" placeholder="Digite sua senha" value="" style="padding-right: 2.75rem;"/>
-        <button type="button" class="input-icon-right pwd-toggle" onclick="togglePasswordVisibility('password-input', this)" aria-label="Mostrar/ocultar senha" style="background:none;border:none;padding:0;display:flex;align-items:center;">
-          <svg id="eye-icon-password" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button type="button" class="input-icon-right pwd-toggle" id="toggle-password" data-target="password-input" aria-label="Mostrar/ocultar senha" style="background:none;border:none;padding:0;display:flex;align-items:center;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
           </svg>
         </button>
@@ -453,7 +453,7 @@
       <div class="input-wrap">
         <span class="input-icon material-symbols-outlined">lock</span>
         <input id="confirm-password-input" class="field-input" type="password" autocomplete="new-password" placeholder="Repita sua senha" style="padding-right: 2.75rem;"/>
-        <button type="button" class="input-icon-right pwd-toggle" onclick="togglePasswordVisibility('confirm-password-input', this)" aria-label="Mostrar/ocultar senha" style="background:none;border:none;padding:0;display:flex;align-items:center;">
+        <button type="button" class="input-icon-right pwd-toggle" id="toggle-confirm-password" data-target="confirm-password-input" aria-label="Mostrar/ocultar senha" style="background:none;border:none;padding:0;display:flex;align-items:center;">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
           </svg>
@@ -473,16 +473,16 @@
   </div>
 
   <!-- CTA -->
-  <button id="main-action-btn" class="btn-primary" onclick="handleLogin()">
+  <button id="main-action-btn" class="btn-primary">
     Entrar na Plataforma
   </button>
 
   <!-- Footer links (login only) -->
   <div id="forgot-pwd" class="auth-footer">
-    <button class="link-subtle" onclick="simularEsqueciSenha()">Esqueceu a senha?</button>
+    <button id="btn-esqueci-senha" class="link-subtle">Esqueceu a senha?</button>
     <div style="display:flex;align-items:center;gap:0.25rem;">
       <span class="link-subtle">Novo por aqui?</span>
-      <button class="link-brand" onclick="switchTab('register')">Criar conta</button>
+      <button id="btn-criar-conta" class="link-brand">Criar conta</button>
     </div>
   </div>
 
@@ -663,6 +663,30 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+        // Tabs
+        document.getElementById('tab-login').addEventListener('click', () => switchTab('login'));
+        document.getElementById('tab-cadastrar').addEventListener('click', () => switchTab('register'));
+
+        // Role selector
+        document.getElementById('btn-motorista').addEventListener('click', (e) => setRole('motorista', e.currentTarget));
+        document.getElementById('btn-empresa').addEventListener('click', (e) => setRole('empresa', e.currentTarget));
+
+        // Password toggles
+        document.querySelectorAll('.pwd-toggle').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const targetId = e.currentTarget.dataset.target;
+                togglePasswordVisibility(targetId, e.currentTarget);
+            });
+        });
+
+        // Ação principal (login ou cadastro)
+        document.getElementById('main-action-btn').addEventListener('click', handleLogin);
+
+        // Rodapé
+        document.getElementById('btn-esqueci-senha').addEventListener('click', simularEsqueciSenha);
+        document.getElementById('btn-criar-conta').addEventListener('click', () => switchTab('register'));
+
+        // Limpa campos para evitar autocomplete
         setTimeout(() => {
             document.getElementById('email-input').value    = '';
             document.getElementById('password-input').value = '';
