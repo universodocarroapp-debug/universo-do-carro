@@ -79,46 +79,10 @@
 <section class="mt-6">
 <div class="flex items-center justify-between px-4 mb-4">
 <h3 class="text-slate-900 dark:text-slate-100 text-xl font-bold tracking-tight">Cotações Ativas</h3>
-<a class="text-primary text-sm font-semibold" href="#">Ver todas</a>
+<span id="cotacoes-count" class="text-primary text-sm font-semibold"></span>
 </div>
-<div class="px-4 space-y-3">
-<div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-<div class="flex justify-between items-start mb-3">
-<div>
-<h4 class="font-bold text-slate-900 dark:text-slate-100">Kit Suspensão Dianteira</h4>
-<p class="text-xs text-slate-500 dark:text-slate-400">Honda Civic 2018 • #QT-8821</p>
-</div>
-<span class="px-2 py-1 rounded-md bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 text-[10px] font-bold uppercase tracking-wider">Aguardando</span>
-</div>
-<div class="flex items-center gap-4 text-sm border-t border-slate-100 dark:border-slate-700 pt-3">
-<div class="flex items-center gap-1 text-slate-600 dark:text-slate-400">
-<span translate="no" class="material-symbols-outlined text-[18px]">store</span>
-<span>12 ofertas</span>
-</div>
-<div class="flex items-center gap-1 text-slate-600 dark:text-slate-400">
-<span translate="no" class="material-symbols-outlined text-[18px]">schedule</span>
-<span>2h atrás</span>
-</div>
-</div>
-</div>
-<div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-<div class="flex justify-between items-start mb-3">
-<div>
-<h4 class="font-bold text-slate-900 dark:text-slate-100">Par de Faróis LED</h4>
-<p class="text-xs text-slate-500 dark:text-slate-400">Toyota Corolla 2021 • #QT-8790</p>
-</div>
-<span class="px-2 py-1 rounded-md bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-[10px] font-bold uppercase tracking-wider">Concluído</span>
-</div>
-<div class="flex items-center gap-4 text-sm border-t border-slate-100 dark:border-slate-700 pt-3">
-<div class="flex items-center gap-1 text-slate-600 dark:text-slate-400">
-<span translate="no" class="material-symbols-outlined text-[18px]">store</span>
-<span>8 ofertas</span>
-</div>
-<div class="flex items-center gap-1 text-primary font-medium">
-<span>Melhor preço: R$ 1.250,00</span>
-</div>
-</div>
-</div>
+<div id="cotacoes-lista" class="px-4 space-y-3">
+<div class="text-center text-sm text-slate-500 py-6">Carregando suas cotações...</div>
 </div>
 </section>
 <section class="mt-8 px-4">
@@ -232,6 +196,208 @@
         </div>
     </div>
 </div>
+
+<!-- Modal: Ver Ofertas e Aceitar -->
+<div id="modal-ofertas" class="hidden fixed inset-0 z-[200] flex items-end sm:items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 max-h-[85vh] flex flex-col shadow-2xl">
+        <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between flex-shrink-0">
+            <div>
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Ofertas Recebidas</h3>
+                <p id="modal-ofertas-subtitle" class="text-xs text-slate-500 mt-0.5"></p>
+            </div>
+            <button onclick="document.getElementById('modal-ofertas').classList.add('hidden')" class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                <span translate="no" class="material-symbols-outlined text-slate-500">close</span>
+            </button>
+        </div>
+        <div id="ofertas-lista" class="p-4 overflow-y-auto space-y-3 flex-1">
+        </div>
+    </div>
+</div>
+
+<script>
+    // ─── Utilidades ───────────────────────────────────────────────────────────
+    function escHtml(s) {
+        if (s == null) return '';
+        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;');
+    }
+
+    function timeAgo(dateStr) {
+        const diff = Math.floor((Date.now() - new Date(dateStr)) / 1000);
+        if (diff < 60)    return 'agora mesmo';
+        if (diff < 3600)  return `${Math.floor(diff/60)}min atrás`;
+        if (diff < 86400) return `${Math.floor(diff/3600)}h atrás`;
+        return `${Math.floor(diff/86400)}d atrás`;
+    }
+
+    // ─── Carrega cotações do usuário logado ───────────────────────────────────
+    async function loadMyCotacoes() {
+        const userId = localStorage.getItem('userId');
+        if (!userId) { window.location.href = 'login.html'; return; }
+
+        try {
+            const res  = await fetch(`/api/cotacoes/minhas/${userId}`);
+            const data = await res.json();
+            const container = document.getElementById('cotacoes-lista');
+            const countEl   = document.getElementById('cotacoes-count');
+
+            if (!data.cotacoes || data.cotacoes.length === 0) {
+                container.innerHTML = '<div class="text-center text-sm text-slate-500 py-8">Nenhuma cotação ainda.<br>Clique em <strong>Iniciar Nova Cotação</strong> para começar!</div>';
+                return;
+            }
+
+            const ativas = data.cotacoes.filter(c => c.status !== 'Concluído');
+            countEl.textContent = ativas.length > 0 ? `${ativas.length} ativa${ativas.length > 1 ? 's' : ''}` : '';
+
+            container.innerHTML = '';
+            data.cotacoes.forEach(cot => {
+                const concluido    = cot.status === 'Concluído';
+                const statusClass  = concluido
+                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                    : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400';
+                const cotId        = parseInt(cot.id, 10);
+                const subtitulo    = [cot.marca, cot.modelo, cot.ano].filter(Boolean).join(' ');
+
+                const card = document.createElement('div');
+                card.className = 'bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm';
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h4 class="font-bold text-slate-900 dark:text-slate-100">${escHtml(cot.peca)}</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">${escHtml(subtitulo) || 'Veículo não informado'} • #QT-${String(cotId).padStart(4,'0')}</p>
+                        </div>
+                        <span class="px-2 py-1 rounded-md ${statusClass} text-[10px] font-bold uppercase tracking-wider">${concluido ? 'Concluído' : 'Aguardando'}</span>
+                    </div>
+                    <div class="flex items-center gap-4 text-sm border-t border-slate-100 dark:border-slate-700 pt-3">
+                        <div class="flex items-center gap-1 text-slate-600 dark:text-slate-400">
+                            <span translate="no" class="material-symbols-outlined text-[18px]">schedule</span>
+                            <span>${timeAgo(cot.created_at)}</span>
+                        </div>
+                        ${!concluido ? `
+                        <button data-cot-id="${cotId}" data-peca="${escHtml(cot.peca)}" class="ml-auto text-xs text-primary font-bold flex items-center gap-1 hover:underline btn-ver-ofertas">
+                            <span translate="no" class="material-symbols-outlined text-[16px]">storefront</span> Ver Ofertas
+                        </button>` : `
+                        <span class="ml-auto text-xs text-green-600 dark:text-green-400 font-medium flex items-center gap-1">
+                            <span translate="no" class="material-symbols-outlined text-[16px]">check_circle</span> Finalizada
+                        </span>`}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            // Atach eventos depois de inserir no DOM
+            container.querySelectorAll('.btn-ver-ofertas').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    verOfertas(parseInt(btn.dataset.cotId, 10), btn.dataset.peca);
+                });
+            });
+        } catch(e) {
+            console.error(e);
+            document.getElementById('cotacoes-lista').innerHTML = '<div class="text-center text-sm text-red-500 py-6">Erro ao carregar cotações. Tente recarregar a página.</div>';
+        }
+    }
+
+    // ─── Modal de Ofertas ─────────────────────────────────────────────────────
+    let currentCotacaoId = null;
+
+    async function verOfertas(cotacaoId, pecaNome) {
+        currentCotacaoId = cotacaoId;
+        document.getElementById('modal-ofertas-subtitle').textContent = pecaNome || '';
+        document.getElementById('ofertas-lista').innerHTML = '<div class="text-center text-sm text-slate-500 py-6">Buscando ofertas...</div>';
+        document.getElementById('modal-ofertas').classList.remove('hidden');
+
+        try {
+            const res  = await fetch(`/api/ofertas/${cotacaoId}`);
+            const data = await res.json();
+            const container = document.getElementById('ofertas-lista');
+
+            if (!data.ofertas || data.ofertas.length === 0) {
+                container.innerHTML = '<div class="text-center text-sm text-slate-500 py-6">Nenhuma oferta ainda.<br>As autopeças parceiras estão sendo notificadas.</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            data.ofertas.forEach((oferta, idx) => {
+                const melhor = idx === 0;
+                const card   = document.createElement('div');
+                card.className = `border rounded-xl p-4 ${melhor ? 'border-primary bg-primary/5 dark:bg-primary/10' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800'}`;
+                card.innerHTML = `
+                    <div class="flex justify-between items-start gap-3">
+                        <div class="min-w-0">
+                            <div class="flex flex-wrap items-center gap-2 mb-1">
+                                <span class="font-bold text-slate-900 dark:text-white truncate">${escHtml(oferta.loja_nome)}</span>
+                                ${melhor ? '<span class="text-[10px] bg-primary text-white px-2 py-0.5 rounded-full font-bold flex-shrink-0">MELHOR PREÇO</span>' : ''}
+                            </div>
+                            <p class="text-xs text-slate-500">${escHtml(oferta.loja_cidade || '')}</p>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">Tipo: <span class="font-medium">${escHtml(oferta.peca_tipo || 'Não informado')}</span></p>
+                            ${oferta.garantia && oferta.garantia !== 'Não informada' ? `<p class="text-xs text-slate-600 dark:text-slate-400">Garantia: <span class="font-medium">${escHtml(oferta.garantia)}</span></p>` : ''}
+                        </div>
+                        <div class="text-right flex-shrink-0">
+                            <p class="text-xl font-bold text-primary">R$ ${Number(oferta.valor).toLocaleString('pt-BR', {minimumFractionDigits:2})}</p>
+                            <button data-oferta-id="${oferta.id}" class="btn-aceitar mt-2 text-xs bg-primary text-white px-3 py-1.5 rounded-lg font-bold hover:bg-primary/90 transition-colors">
+                                Aceitar
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            container.querySelectorAll('.btn-aceitar').forEach(btn => {
+                btn.addEventListener('click', () => aceitarOferta(parseInt(btn.dataset.ofertaId, 10)));
+            });
+        } catch(e) {
+            document.getElementById('ofertas-lista').innerHTML = '<div class="text-center text-sm text-red-500 py-6">Erro ao carregar ofertas.</div>';
+        }
+    }
+
+    async function aceitarOferta(ofertaId) {
+        const authToken = localStorage.getItem('authToken');
+        if (!authToken) {
+            alert('Sessão expirada. Faça login novamente.');
+            window.location.href = 'login.html';
+            return;
+        }
+
+        if (!confirm('Confirmar aceitação desta oferta? O pedido será finalizado e você entrará em contato com o fornecedor.')) return;
+
+        try {
+            const res  = await fetch('/api/cotacoes/aceitar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                },
+                body: JSON.stringify({ cotacao_id: currentCotacaoId, oferta_id: ofertaId })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                document.getElementById('modal-ofertas').classList.add('hidden');
+                const fone = data.telefone;
+                if (fone) {
+                    const numLimpo = fone.replace(/\D/g, '');
+                    alert(`Oferta aceita!\n\nEntre em contato com o fornecedor pelo WhatsApp:\n${fone}`);
+                    // Tenta abrir WhatsApp
+                    window.open(`https://wa.me/55${numLimpo}`, '_blank');
+                } else {
+                    alert('Oferta aceita com sucesso! O fornecedor entrará em contato.');
+                }
+                loadMyCotacoes();
+            } else {
+                alert(data.error || 'Erro ao aceitar oferta. Tente novamente.');
+            }
+        } catch(e) {
+            alert('Erro de conexão. Tente novamente.');
+        }
+    }
+
+    // ─── Inicialização ────────────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+        const userId = localStorage.getItem('userId');
+        if (!userId) { window.location.href = 'login.html'; return; }
+        loadMyCotacoes();
+    });
+</script>
 
 <script>
     function toggleAssistant() {

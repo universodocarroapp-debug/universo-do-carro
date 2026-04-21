@@ -615,7 +615,25 @@
                 });
                 const data = await response.json();
                 if (data.success) {
-                    if (data.user?.id) localStorage.setItem('userId', data.user.id);
+                    // Cadastro OK — agora faz login para obter o authToken necessário
+                    // nos endpoints autenticados (/api/cotacoes/aceitar, /api/ofertas)
+                    try {
+                        const loginRes  = await fetch('/api/login', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email, password: pwd })
+                        });
+                        const loginData = await loginRes.json();
+                        if (loginData.success) {
+                            if (loginData.user?.id)     localStorage.setItem('userId',    loginData.user.id);
+                            if (loginData.access_token) localStorage.setItem('authToken', loginData.access_token);
+                        } else {
+                            // Login automático falhou — salva apenas o userId do registro
+                            if (data.user?.id) localStorage.setItem('userId', data.user.id);
+                        }
+                    } catch (_) {
+                        if (data.user?.id) localStorage.setItem('userId', data.user.id);
+                    }
                     window.location.href = currentRole === 'empresa' ? 'loja.html' : 'comprador.html';
                 } else {
                     alert(data.error + (data.details ? '\n' + data.details : ''));

@@ -6,6 +6,8 @@ const rateLimit = require('express-rate-limit');
 const bodyParser = require('body-parser');
 const path = require('path');
 const fs = require('fs');
+const http = require('http');
+const https = require('https');
 const multer = require('multer');
 const { createClient } = require('@supabase/supabase-js');
 
@@ -121,6 +123,40 @@ async function requireAdmin(req, res, next) {
 }
 
 // ---------------------------------------------------------------------------
+// Webhook N8N — fire-and-forget, nunca bloqueia a resposta principal.
+// Envia os dados da cotação + lista de autopeças na mesma cidade para o N8N,
+// que por sua vez usa o Z-API para disparar WhatsApp para cada loja.
+// ---------------------------------------------------------------------------
+function notifyN8n(cotacao, lojas) {
+    const webhookUrl = process.env.N8N_WEBHOOK_URL;
+    if (!webhookUrl) return; // N8N_WEBHOOK_URL não configurado — silenciosamente ignorado
+    try {
+        const payload = JSON.stringify({ cotacao, lojas });
+        const url = new URL(webhookUrl);
+        const isHttps = url.protocol === 'https:';
+        const lib = isHttps ? https : http;
+        const options = {
+            hostname: url.hostname,
+            port: url.port || (isHttps ? 443 : 80),
+            path: url.pathname + url.search,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(payload)
+            }
+        };
+        const req = lib.request(options, r => {
+            console.log(`[n8n] webhook respondeu HTTP ${r.statusCode}`);
+        });
+        req.on('error', e => console.error('[n8n] webhook error:', e.message));
+        req.write(payload);
+        req.end();
+    } catch (e) {
+        console.error('[n8n] erro ao preparar webhook:', e.message);
+    }
+}
+
+// ---------------------------------------------------------------------------
 // Auditoria — fire-and-forget, nunca bloqueia a resposta principal.
 // Tabela esperada no Supabase:
 //   audit_logs(id, action, admin_id, target_id, target_type, details, ip, created_at)
@@ -151,7 +187,6 @@ app.post('/api/register', async (req, res) => {
         if (cleanCnpj.length !== 14) return res.status(400).json({ error: 'CNPJ com tamanho inválido.' });
         try {
             const bData = await new Promise((resolve, reject) => {
-                const https = require('https');
                 https.get(`https://brasilapi.com.br/api/cnpj/v1/${cleanCnpj}`, (response) => {
                     if (response.statusCode >= 400) return reject(new Error('Falha HTTP'));
                     let rawData = '';
@@ -280,6 +315,33 @@ app.post('/api/cotacoes', upload.single('foto'), async (req, res) => {
     ]).select();
 
     if (error) return res.status(500).json({ error: 'Erro ao salvar cotação.' });
+
+    // Notifica autopeças da mesma cidade via N8N + Z-API (fire-and-forget)
+    supabase.from('profiles')
+        .select('id, name, telefone')
+        .eq('role', 'empresa')
+        .eq('tipo_empresa', 'autopecas')
+        .eq('cidade', cidade)
+        .then(({ data: lojas, error: lojasError }) => {
+            if (lojasError) {
+                console.error('[n8n] erro ao buscar lojas:', lojasError.message);
+                return;
+            }
+            if (!lojas || lojas.length === 0) {
+                console.log(`[n8n] nenhuma autopeça cadastrada em "${cidade}" — webhook não disparado.`);
+                return;
+            }
+            notifyN8n({
+                cotacao_id: data[0].id,
+                peca, cidade,
+                marca: marca || null,
+                modelo: modelo || null,
+                ano: ano || null,
+                foto_url
+            }, lojas);
+            console.log(`[n8n] webhook disparado para ${lojas.length} loja(s) em ${cidade}.`);
+        });
+
     res.json({ success: true, cotacao_id: data[0].id });
 });
 

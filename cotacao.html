@@ -58,28 +58,33 @@
 <div class="grid grid-cols-1 gap-4">
 <div class="flex flex-col gap-1.5">
 <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Marca</label>
-<select class="w-full h-12 px-4 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
+<select id="marca-input" class="w-full h-12 px-4 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
 <option value="">Selecione a marca</option>
 <option>Volkswagen</option>
 <option>Chevrolet</option>
 <option>Fiat</option>
 <option>Toyota</option>
 <option>Honda</option>
+<option>Hyundai</option>
+<option>Renault</option>
+<option>Ford</option>
+<option>Jeep</option>
+<option>Nissan</option>
 </select>
 </div>
 <div class="grid grid-cols-2 gap-4">
 <div class="flex flex-col gap-1.5">
 <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Modelo</label>
-<input class="w-full h-12 px-4 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="Ex: Golf" type="text"/>
+<input id="modelo-input" class="w-full h-12 px-4 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="Ex: Golf" type="text"/>
 </div>
 <div class="flex flex-col gap-1.5">
 <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Ano</label>
-<input class="w-full h-12 px-4 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="2023" type="number"/>
+<input id="ano-input" class="w-full h-12 px-4 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="2023" type="number"/>
 </div>
 </div>
 <div class="flex flex-col gap-1.5">
 <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Placa ou Chassi <span class="text-slate-400 font-normal">(Opcional)</span></label>
-<input class="w-full h-12 px-4 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all uppercase" placeholder="Ajuda a encontrar a peça exata" type="text"/>
+<input id="chassi-input" class="w-full h-12 px-4 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all uppercase" placeholder="Ajuda a encontrar a peça exata" type="text"/>
 </div>
 </div>
 </div>
@@ -93,13 +98,18 @@
 <div class="flex flex-col gap-1.5 relative">
 <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Onde você precisa das peças?</label>
 <div class="relative flex items-center">
-<select class="w-full h-12 pl-4 pr-10 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all appearance-none cursor-pointer">
+<select id="cidade-input" class="w-full h-12 pl-4 pr-10 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all appearance-none cursor-pointer">
+<option value="">Selecione sua cidade</option>
 <option value="São Paulo, SP">São Paulo, SP</option>
 <option value="Rio de Janeiro, RJ">Rio de Janeiro, RJ</option>
 <option value="Belo Horizonte, MG">Belo Horizonte, MG</option>
 <option value="Curitiba, PR">Curitiba, PR</option>
 <option value="Porto Alegre, RS">Porto Alegre, RS</option>
-<option value="Outra cidade">Outra...</option>
+<option value="Salvador, BA">Salvador, BA</option>
+<option value="Fortaleza, CE">Fortaleza, CE</option>
+<option value="Manaus, AM">Manaus, AM</option>
+<option value="Recife, PE">Recife, PE</option>
+<option value="Goiânia, GO">Goiânia, GO</option>
 </select>
 <span translate="no" class="material-symbols-outlined absolute right-3 text-slate-400 pointer-events-none">expand_more</span>
 </div>
@@ -114,11 +124,11 @@
 <div class="space-y-4">
 <div class="flex flex-col gap-1.5">
 <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Nome da Peça ou Código</label>
-<input class="w-full h-12 px-4 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="Ex: Filtro de Óleo ou 06A115561B" type="text"/>
+<input id="peca-input" class="w-full h-12 px-4 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="Ex: Filtro de Óleo ou 06A115561B" type="text"/>
 </div>
 <div class="flex flex-col gap-1.5">
 <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Descrição Adicional</label>
-<textarea class="w-full p-4 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all resize-none" placeholder="Conte mais detalhes sobre o problema ou a peça que precisa..." rows="3"></textarea>
+<textarea id="descricao-input" class="w-full p-4 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all resize-none" placeholder="Conte mais detalhes sobre o problema ou a peça que precisa..." rows="3"></textarea>
 </div>
 </div>
 </div>
@@ -134,22 +144,10 @@
 <span class="text-[10px] font-bold uppercase text-slate-500 group-hover:text-primary">Upload</span>
 </button>
 <input type="file" id="hidden-file-input" class="hidden" accept="image/*" multiple onchange="handleFileUpload(event)">
-<div class="aspect-square rounded-lg bg-slate-100 dark:bg-slate-800 relative group overflow-hidden">
-<img class="w-full h-full object-cover" data-alt="Close up of a car engine part" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYJwvtJwk8e_V5vF-956dQTm10Nig3R2vXhvn33XEOtQmAVhVsFRY3a2gXaHe45W7GWMljKIMoDzkT1Xp6j7Df2-ynStyORDJlF5dxs-NRz02mzZZJ7Hvu6CU5cT6mFfUHbLoV80F4lu1EPgDpDVZPQ4-_iqXhkgyp_5m4O1TCEvtytx6qS7NAh50TlOPLF_4qQcpbO9MgeSgIpMSihYbbPz1zPo8c1A8uzdKQR4Gek4Ag7MmiK_HLVVMxaYpH35qy24HmOCPV9oM"/>
-<button type="button" onclick="this.parentElement.remove()" class="absolute top-1 right-1 bg-white/80 dark:bg-black/50 p-1 rounded-full text-red-500 hover:bg-white dark:hover:bg-slate-800 transition-colors">
-<span translate="no" class="material-symbols-outlined text-sm">close</span>
-</button>
-</div>
-<div class="aspect-square rounded-lg bg-slate-100 dark:bg-slate-800 relative group overflow-hidden">
-<img class="w-full h-full object-cover" data-alt="Mechanical car part on a table" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDScFKOV16U8XwE4SZVI-O3sOe3_uSUxm3aro1jDz4AN9dbxTZ4R2e3043lOiF90xiExY_E8qZTEZboW7hCaP05EO9M7E0mMyTTRppbsmipqhUg2MgjuHUBRmxooyybBCKMzo7HoqgB3QqbYQxopNi-r-0yx8y2pESx-k1sIFraXnD2IJqMKnfajVdnWvrmskHSYfhLVhs4rZ1tg-_svKxnKQ2xHAZ2yLGxTU_WJJvrywvaTKDbgyu2SJ-ufBNOz8tMRq6U6tWoarg"/>
-<button type="button" onclick="this.parentElement.remove()" class="absolute top-1 right-1 bg-white/80 dark:bg-black/50 p-1 rounded-full text-red-500 hover:bg-white dark:hover:bg-slate-800 transition-colors">
-<span translate="no" class="material-symbols-outlined text-sm">close</span>
-</button>
-</div>
 </div>
 <p class="text-[11px] text-slate-500 mt-3 text-center italic">Fotos ajudam os vendedores a identificar a peça correta mais rápido.</p>
 </div>
-<button onclick="alert('Cotação enviada simultaneamente para as autopeças parceiras!'); window.location.href='comprador.html'" class="w-full bg-primary text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-primary/30 hover:bg-primary/90 active:scale-[0.98] transition-all flex items-center justify-center gap-2" type="button">
+<button id="btn-submit-cotacao" onclick="submitCotacao()" class="w-full bg-primary text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-primary/30 hover:bg-primary/90 active:scale-[0.98] transition-all flex items-center justify-center gap-2" type="button">
                 Enviar Cotação na Rede
                 <span translate="no" class="material-symbols-outlined">send</span>
 </button>
@@ -177,30 +175,98 @@
 </div>
 </nav>
 <script>
-function handleFileUpload(event) {
-    const grid = document.getElementById('photo-grid');
-    const files = event.target.files;
-    
-    for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        if (!file.type.startsWith('image/')) continue;
-        
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const div = document.createElement('div');
-            div.className = "aspect-square rounded-lg bg-slate-100 dark:bg-slate-800 relative group overflow-hidden";
-            div.innerHTML = `
-                <img class="w-full h-full object-cover" src="${e.target.result}" />
-                <button type="button" onclick="this.parentElement.remove()" class="absolute top-1 right-1 bg-white/80 dark:bg-black/50 p-1 rounded-full text-red-500 hover:bg-white dark:hover:bg-slate-800 transition-colors">
-                    <span translate="no" class="material-symbols-outlined text-sm">close</span>
-                </button>
-            `;
-            grid.appendChild(div);
+    // Armazena os File objects selecionados (null = removido)
+    let uploadedFiles = [];
+
+    function handleFileUpload(event) {
+        const grid = document.getElementById('photo-grid');
+        const files = Array.from(event.target.files);
+
+        for (const file of files) {
+            if (!file.type.startsWith('image/')) continue;
+
+            const idx = uploadedFiles.length;
+            uploadedFiles.push(file);
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const div = document.createElement('div');
+                div.className = 'aspect-square rounded-lg bg-slate-100 dark:bg-slate-800 relative group overflow-hidden';
+                div.dataset.fileIdx = idx;
+                div.innerHTML = `
+                    <img class="w-full h-full object-cover" src="${e.target.result}" alt="Foto da peça" />
+                    <button type="button" class="absolute top-1 right-1 bg-white/80 dark:bg-black/50 p-1 rounded-full text-red-500 hover:bg-white dark:hover:bg-slate-800 transition-colors">
+                        <span translate="no" class="material-symbols-outlined text-sm">close</span>
+                    </button>
+                `;
+                div.querySelector('button').addEventListener('click', function() {
+                    uploadedFiles[parseInt(div.dataset.fileIdx)] = null;
+                    div.remove();
+                });
+                grid.appendChild(div);
+            };
+            reader.readAsDataURL(file);
         }
-        reader.readAsDataURL(file);
+        // Reseta para permitir re-seleção do mesmo arquivo
+        event.target.value = '';
     }
-    // Reset so same files can be selected again
-    event.target.value = '';
-}
+
+    async function submitCotacao() {
+        const userId = localStorage.getItem('userId');
+        if (!userId) {
+            alert('Você precisa estar logado. Faça login primeiro.');
+            window.location.href = 'login.html';
+            return;
+        }
+
+        const peca    = document.getElementById('peca-input').value.trim();
+        const cidade  = document.getElementById('cidade-input').value;
+
+        if (!peca)   { alert('Informe o nome ou código da peça desejada.'); return; }
+        if (!cidade) { alert('Selecione a cidade onde você precisa das peças.'); return; }
+
+        const btn = document.getElementById('btn-submit-cotacao');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="material-symbols-outlined animate-spin">progress_activity</span>&nbsp; Enviando...';
+
+        try {
+            const formData = new FormData();
+            formData.append('user_id', userId);
+            formData.append('peca',    peca);
+            formData.append('cidade',  cidade);
+
+            const marca     = document.getElementById('marca-input').value;
+            const modelo    = document.getElementById('modelo-input').value.trim();
+            const ano       = document.getElementById('ano-input').value.trim();
+            const chassi    = document.getElementById('chassi-input').value.trim();
+            const descricao = document.getElementById('descricao-input').value.trim();
+
+            if (marca)     formData.append('marca',     marca);
+            if (modelo)    formData.append('modelo',    modelo);
+            if (ano)       formData.append('ano',       ano);
+            if (chassi)    formData.append('chassi',    chassi);
+            if (descricao) formData.append('descricao', descricao);
+
+            // Envia apenas a primeira foto válida (backend aceita upload.single)
+            const foto = uploadedFiles.find(f => f !== null);
+            if (foto) formData.append('foto', foto);
+
+            const res  = await fetch('/api/cotacoes', { method: 'POST', body: formData });
+            const data = await res.json();
+
+            if (data.success) {
+                alert('Cotação enviada! As autopeças parceiras na sua cidade já foram notificadas.');
+                window.location.href = 'comprador.html';
+            } else {
+                alert(data.error || 'Erro ao enviar cotação. Tente novamente.');
+                btn.disabled = false;
+                btn.innerHTML = 'Enviar Cotação na Rede <span class="material-symbols-outlined">send</span>';
+            }
+        } catch (e) {
+            alert('Erro de conexão com o servidor.');
+            btn.disabled = false;
+            btn.innerHTML = 'Enviar Cotação na Rede <span class="material-symbols-outlined">send</span>';
+        }
+    }
 </script>
 </body></html>
