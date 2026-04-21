@@ -1,207 +1,546 @@
 <!DOCTYPE html>
-<html lang="pt-br" class="dark"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<html lang="pt-BR" class="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta name="theme-color" content="#FF5A00"/>
 <link rel="manifest" href="manifest.json"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<title>Universo do Carro — Entrar</title>
+
+<!-- Tailwind CDN (sem plugins — mesma URL do index.html) -->
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-tailwind.config = { darkMode: "class", theme: { extend: { colors: { "primary": "#FF5A00", "secondary": "#E63946", "background-light": "#f6f6f8", "background-dark": "#050505", slate: { 800: '#141414', 900: '#0A0A0A' } }, fontFamily: { "display": ["Inter"] }, borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"}, }, }, }
-</script>
-<title>Universo do Carro - Login</title>
-<style> body { min-height: max(884px, 100dvh); } </style>
-</head>
-<body class="bg-background-light dark:bg-background-dark font-display">
-<div class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark group/design-root overflow-x-hidden">
-<div class="flex items-center bg-white dark:bg-background-dark p-4 pb-2 justify-between border-b border-primary/10">
-<div class="text-slate-900 dark:text-slate-100 flex size-12 shrink-0 items-center justify-center cursor-pointer" onclick="window.location.href='index.html'" data-icon="ArrowLeft">
-<span translate="no" class="material-symbols-outlined">arrow_back</span>
-</div>
-<h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12">Universo do Carro</h2>
-</div>
-<div class="@container">
-<div class="@[480px]:px-4 @[480px]:py-3">
-<div class="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end overflow-hidden bg-slate-200 dark:bg-slate-800 @[480px]:rounded-lg min-h-[180px]" data-alt="Modern high-end automotive spare parts warehouse" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC1b0SmURR1T-Pk_Aiw-exlmHJvegBN1gt4SVoVy05Qxvhda4FmG9NwDc1QmQyAf_jtWsa-TIxrKagN8caE5UTWRMOnnn5zmrk3_wPtE5bZ3bW_mfkSrUGTPuhHrrG1ni-qGvopCBN1o1Ter8cq9Lk3hKWv6N6D35kaHjkd2Q1KOTHnjL2l3sdEVXNYBJE1GOYX7zMV8xFYHLxPoEsFoWSnbQcEX7nxaqbw767ErKBP1J5gg1UjNcTgeXNHNC2hsejOg1pEcLIt5w4");'>
-</div>
-</div>
-</div>
-<h2 class="text-slate-900 dark:text-slate-100 tracking-light text-[28px] font-bold leading-tight px-4 text-center pb-2 pt-6">Bem-vindo ao Universo</h2>
-<p class="text-slate-600 dark:text-slate-400 text-sm text-center px-6 pb-4">A maior plataforma SaaS para gestão de peças automotivas.</p>
-<div class="pb-3">
-<div class="flex border-b border-primary/10 px-4 justify-between" id="auth-tabs">
-<button class="flex flex-col items-center justify-center border-b-[3px] border-primary text-primary pb-[13px] pt-4 flex-1" onclick="toggleAuthMode('login', this)">
-<p class="text-sm font-bold leading-normal tracking-[0.015em]">Entrar</p>
-</button>
-<button class="flex flex-col items-center justify-center border-b-[3px] border-transparent text-slate-500 dark:text-slate-400 pb-[13px] pt-4 flex-1" onclick="toggleAuthMode('register', this)">
-<p class="text-sm font-bold leading-normal tracking-[0.015em]">Cadastrar-se</p>
-</button>
-</div>
-</div>
-<div class="flex flex-col gap-4 px-4 py-3">
 
-<div id="role-selector" class="hidden font-display p-1 bg-slate-100 dark:bg-slate-800 rounded-lg">
-    <button class="flex-1 py-2.5 text-sm font-bold rounded-md bg-white dark:bg-slate-700 shadow text-primary transition-all" onclick="setRole('motorista', this)" id="btn-motorista">Sou Motorista</button>
-    <button class="flex-1 py-2.5 text-sm font-semibold rounded-md text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-all" onclick="setRole('empresa', this)" id="btn-empresa">Sou Empresa</button>
-</div>
-
-<label class="hidden flex-col w-full" id="field-name">
-    <p class="text-slate-900 dark:text-slate-100 text-base font-medium leading-normal pb-2">Nome Completo (ou Razão Social)</p>
-    <div class="relative flex items-center">
-    <span translate="no" class="material-symbols-outlined absolute left-4 text-slate-400">person</span>
-    <input id="name-input" class="form-input flex w-full min-w-0 flex-1 rounded-lg text-slate-900 dark:text-slate-100 focus:outline-0 focus:ring-2 focus:ring-primary border border-primary/20 bg-white dark:bg-slate-900 h-14 placeholder:text-slate-400 pl-12 pr-4 text-base font-normal leading-normal" placeholder="Seu nome" />
-    </div>
-</label>
-
-<label class="hidden flex-col w-full" id="field-cnpj">
-    <p class="text-slate-900 dark:text-slate-100 text-base font-medium leading-normal pb-2">CNPJ</p>
-    <div class="relative flex items-center">
-    <span translate="no" class="material-symbols-outlined absolute left-4 text-slate-400">domain</span>
-    <input id="cnpj-input" class="form-input flex w-full min-w-0 flex-1 rounded-lg text-slate-900 dark:text-slate-100 focus:outline-0 focus:ring-2 focus:ring-primary border border-primary/20 bg-white dark:bg-slate-900 h-14 placeholder:text-slate-400 pl-12 pr-4 text-base font-normal leading-normal" placeholder="00.000.000/0001-00" />
-    </div>
-</label>
-
-<label class="hidden flex-col w-full" id="field-tipo-empresa">
-    <p class="text-slate-900 dark:text-slate-100 text-base font-medium leading-normal pb-2">Tipo de Negócio</p>
-    <div class="relative flex items-center">
-    <span translate="no" class="material-symbols-outlined absolute left-4 text-slate-400 z-10">storefront</span>
-    <select id="tipo-empresa-input" class="form-input flex w-full min-w-0 flex-1 rounded-lg text-slate-900 dark:text-slate-100 focus:outline-0 focus:ring-2 focus:ring-primary border border-primary/20 bg-white dark:bg-slate-900 h-14 pl-12 pr-4 text-base font-normal leading-normal appearance-none cursor-pointer">
-        <option value="" disabled selected>Qual seu tipo de negócio?</option>
-        <option value="oficina">Oficina Mecânica (Comprador Atacado)</option>
-        <option value="autopecas">Loja de Autopeças (Vendedor)</option>
-    </select>
-    <span translate="no" class="material-symbols-outlined absolute right-4 text-slate-400 pointer-events-none">expand_more</span>
-    </div>
-</label>
-
-<label class="hidden flex-col w-full" id="field-cidade">
-    <p class="text-slate-900 dark:text-slate-100 text-base font-medium leading-normal pb-2">Cidade da Empresa</p>
-    <div class="relative flex items-center">
-    <span translate="no" class="material-symbols-outlined absolute left-4 text-slate-400 z-10">location_on</span>
-    <select id="cidade-input" class="form-input flex w-full min-w-0 flex-1 rounded-lg text-slate-900 dark:text-slate-100 focus:outline-0 focus:ring-2 focus:ring-primary border border-primary/20 bg-white dark:bg-slate-900 h-14 pl-12 pr-4 text-base font-normal leading-normal appearance-none cursor-pointer">
-        <option value="" disabled selected>Onde sua empresa atua?</option>
-        <option>São José dos Campos, SP</option>
-        <option>São Paulo, SP</option>
-        <option>Rio de Janeiro, RJ</option>
-        <option>Curitiba, PR</option>
-        <option>Belo Horizonte, MG</option>
-        <option>Outra cidade</option>
-    </select>
-    <span translate="no" class="material-symbols-outlined absolute right-4 text-slate-400 pointer-events-none">expand_more</span>
-    </div>
-</label>
-
-<label id="field-telefone" class="hidden flex-col w-full">
-<p class="text-slate-900 dark:text-slate-100 text-base font-medium leading-normal pb-2">Telefone / WhatsApp</p>
-<div class="relative flex items-center">
-<span translate="no" class="material-symbols-outlined absolute left-4 text-slate-400">phone</span>
-<input id="telefone-input" type="tel" class="form-input flex w-full min-w-0 flex-1 rounded-lg text-slate-900 dark:text-slate-100 focus:outline-0 focus:ring-2 focus:ring-primary border border-primary/20 bg-white dark:bg-slate-900 h-14 placeholder:text-slate-400 pl-12 pr-4 text-base font-normal leading-normal" placeholder="(11) 99999-9999"/>
-</div>
-</label>
-
-<label class="flex flex-col w-full">
-<p class="text-slate-900 dark:text-slate-100 text-base font-medium leading-normal pb-2">E-mail</p>
-<div class="relative flex items-center">
-<span translate="no" class="material-symbols-outlined absolute left-4 text-slate-400">mail</span>
-<input id="email-input" type="email" autocomplete="off" class="form-input flex w-full min-w-0 flex-1 rounded-lg text-slate-900 dark:text-slate-100 focus:outline-0 focus:ring-2 focus:ring-primary border border-primary/20 bg-white dark:bg-slate-900 h-14 placeholder:text-slate-400 pl-12 pr-4 text-base font-normal leading-normal" placeholder="exemplo@email.com" value=""/>
-</div>
-</label>
-<label class="flex flex-col w-full">
-<p class="text-slate-900 dark:text-slate-100 text-base font-medium leading-normal pb-2">Senha</p>
-<div class="relative flex items-center">
-<span translate="no" class="material-symbols-outlined absolute left-4 text-slate-400">lock</span>
-<input id="password-input" autocomplete="new-password" class="form-input flex w-full min-w-0 flex-1 rounded-lg text-slate-900 dark:text-slate-100 focus:outline-0 focus:ring-2 focus:ring-primary border border-primary/20 bg-white dark:bg-slate-900 h-14 placeholder:text-slate-400 pl-12 pr-4 text-base font-normal leading-normal" placeholder="Digite sua senha" type="password" value=""/>
-<span translate="no" class="material-symbols-outlined absolute right-4 text-slate-400 cursor-pointer" onclick="const p = document.getElementById('password-input'); p.type = p.type === 'password' ? 'text' : 'password';">visibility</span>
-</div>
-</label>
-<div id="promo-banner" class="mt-2 p-4 bg-primary/5 rounded-xl border border-primary/10 flex items-center gap-3">
-<div class="bg-primary/20 p-2 rounded-full text-primary">
-<span translate="no" class="material-symbols-outlined">sell</span>
-</div>
-<div>
-<p class="text-sm font-bold text-slate-900 dark:text-slate-100">Descontos para Empresas</p>
-<p class="text-xs text-slate-600 dark:text-slate-400">Use seu <strong>CNPJ</strong> no cadastro para preços exclusivos de revenda.</p>
-</div>
-</div>
-<button id="main-action-btn" onclick="handleLogin()" class="mt-2 w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl transition-colors shadow-lg shadow-primary/20 text-lg uppercase tracking-wide">
-    Entrar na Plataforma
-</button>
-<div class="flex items-center justify-between mt-2 px-1" id="forgot-pwd">
-<button class="text-sm text-primary font-medium hover:underline text-left cursor-pointer" onclick="simularEsqueciSenha()">Esqueceu a senha?</button>
-<div class="flex items-center gap-1">
-<span class="text-sm text-slate-500 dark:text-slate-400">Novo por aqui?</span>
-<button class="text-sm text-primary font-bold hover:underline" onclick="toggleAuthMode('register', document.querySelectorAll('#auth-tabs button')[1])">Criar conta</button>
-</div>
-</div>
-</div>
-
-<div class="h-10 bg-transparent"></div>
-</div>
 <script>
-    let currentMode = 'login'; // login | register
-    let currentRole = 'motorista'; // motorista | empresa
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          brand: { 500: '#FF5A00', 600: '#E65100' },
+          dark:  { 900: '#0A0A0A', 800: '#141414', 700: '#1E1E1E' }
+        },
+        fontFamily: { inter: ['Inter', 'sans-serif'] }
+      }
+    }
+  }
+</script>
+
+<style>
+  /* ─── Reset & Base ─────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: #050505;
+    color: #ffffff;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+  }
+
+  /* ─── Background decoration ────────────────────────────────── */
+  .bg-orb {
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(80px);
+  }
+  .bg-orb-1 {
+    width: 500px; height: 500px;
+    top: -160px; right: -160px;
+    background: radial-gradient(circle, rgba(255,90,0,0.10) 0%, transparent 70%);
+  }
+  .bg-orb-2 {
+    width: 400px; height: 400px;
+    bottom: -140px; left: -140px;
+    background: radial-gradient(circle, rgba(255,90,0,0.06) 0%, transparent 70%);
+  }
+
+  /* ─── Card ──────────────────────────────────────────────────── */
+  .auth-card {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 440px;
+    background: rgba(20, 20, 20, 0.80);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 1rem;
+    padding: 2.25rem 2rem;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) inset;
+  }
+  @media (max-width: 480px) {
+    .auth-card { padding: 1.75rem 1.25rem; border-radius: 0.875rem; }
+  }
+
+  /* ─── Logo ──────────────────────────────────────────────────── */
+  .logo-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    justify-content: center;
+    margin-bottom: 1.75rem;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .logo-icon { color: #FF5A00; flex-shrink: 0; }
+  .logo-text-top {
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.18em;
+    color: #ffffff;
+    line-height: 1.1;
+    text-transform: uppercase;
+  }
+  .logo-text-bottom {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: #FF5A00;
+    line-height: 1.1;
+    text-transform: uppercase;
+  }
+
+  /* ─── Tabs ──────────────────────────────────────────────────── */
+  .tabs-wrapper {
+    display: flex;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 1.5rem;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 0.75rem 0.5rem;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.35);
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+    letter-spacing: 0.01em;
+  }
+  .tab-btn.tab-active {
+    color: #FF5A00;
+    border-bottom-color: #FF5A00;
+  }
+  .tab-btn:hover:not(.tab-active) { color: rgba(255,255,255,0.6); }
+
+  /* ─── Role selector ─────────────────────────────────────────── */
+  .role-selector {
+    display: flex;
+    gap: 0.5rem;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 0.5rem;
+    padding: 0.25rem;
+    margin-bottom: 1rem;
+  }
+  .role-btn {
+    flex: 1;
+    padding: 0.625rem 0.75rem;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 0.375rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.4);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .role-btn.role-active {
+    background: rgba(255, 90, 0, 0.12);
+    border-color: rgba(255, 90, 0, 0.35);
+    color: #FF5A00;
+  }
+  .role-btn:hover:not(.role-active) { color: rgba(255,255,255,0.7); }
+
+  /* ─── Form fields ───────────────────────────────────────────── */
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    margin-bottom: 1.125rem;
+  }
+  .field-wrap { display: none; flex-direction: column; gap: 0.375rem; }
+  .field-wrap.field-visible { display: flex; }
+  .field-always { display: flex; flex-direction: column; gap: 0.375rem; }
+
+  .field-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: rgba(255,255,255,0.55);
+    letter-spacing: 0.01em;
+  }
+  .input-wrap { position: relative; display: flex; align-items: center; }
+  .input-icon {
+    position: absolute;
+    left: 13px;
+    color: rgba(255,255,255,0.25);
+    font-size: 18px;
+    pointer-events: none;
+    z-index: 1;
+    font-family: 'Material Symbols Outlined';
+    font-weight: 300;
+    line-height: 1;
+  }
+  .input-icon-right {
+    position: absolute;
+    right: 13px;
+    color: rgba(255,255,255,0.3);
+    font-size: 18px;
+    cursor: pointer;
+    z-index: 1;
+    font-family: 'Material Symbols Outlined';
+    font-weight: 300;
+    line-height: 1;
+    transition: color 0.2s;
+  }
+  .input-icon-right:hover { color: rgba(255,255,255,0.6); }
+
+  .field-input {
+    width: 100%;
+    background: #111111;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 0.5rem;
+    padding: 0.8125rem 1rem 0.8125rem 2.75rem;
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  .field-input::placeholder { color: rgba(255,255,255,0.2); }
+  .field-input:focus {
+    border-color: rgba(255, 90, 0, 0.6);
+    background: #161616;
+    box-shadow: 0 0 0 3px rgba(255, 90, 0, 0.10);
+  }
+  select.field-input {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.3)' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 2.5rem;
+    cursor: pointer;
+  }
+  select.field-input option { background: #141414; color: #ffffff; }
+
+  /* ─── Promo banner ──────────────────────────────────────────── */
+  .promo-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    background: rgba(255, 90, 0, 0.05);
+    border: 1px solid rgba(255, 90, 0, 0.12);
+    border-radius: 0.625rem;
+    margin-bottom: 0.25rem;
+  }
+  .promo-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px; height: 36px;
+    background: rgba(255, 90, 0, 0.15);
+    border-radius: 50%;
+    color: #FF5A00;
+    flex-shrink: 0;
+    font-family: 'Material Symbols Outlined';
+    font-size: 18px;
+    font-weight: 300;
+    line-height: 1;
+  }
+  .promo-title { font-size: 0.8125rem; font-weight: 700; color: #ffffff; }
+  .promo-desc  { font-size: 0.75rem; color: rgba(255,255,255,0.45); margin-top: 0.125rem; line-height: 1.4; }
+
+  /* ─── CTA Button ────────────────────────────────────────────── */
+  .btn-primary {
+    width: 100%;
+    padding: 0.9375rem 1.5rem;
+    background: #FF5A00;
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 4px 16px rgba(255, 90, 0, 0.38);
+    margin-top: 0.375rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-primary:hover {
+    background: #E65100;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 22px rgba(255, 90, 0, 0.48);
+  }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-primary.loading { opacity: 0.7; cursor: not-allowed; }
+
+  /* ─── Footer links ──────────────────────────────────────────── */
+  .auth-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1rem;
+    font-size: 0.8rem;
+  }
+  .link-subtle {
+    color: rgba(255,255,255,0.35);
+    background: none;
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: color 0.2s;
+    padding: 0;
+  }
+  .link-subtle:hover { color: rgba(255,255,255,0.7); }
+  .link-brand {
+    color: #FF5A00;
+    background: none;
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: color 0.2s;
+    padding: 0;
+  }
+  .link-brand:hover { color: #E65100; }
+
+  /* ─── Copyright ─────────────────────────────────────────────── */
+  .copyright {
+    position: relative;
+    z-index: 1;
+    margin-top: 1.5rem;
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.18);
+    text-align: center;
+  }
+
+  /* ─── Divider ───────────────────────────────────────────────── */
+  .footer-divider {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(255,255,255,0.15);
+    font-size: 0.75rem;
+  }
+  .footer-divider span { flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
+</style>
+</head>
+<body>
+
+<!-- Background orbs -->
+<div class="bg-orb bg-orb-1"></div>
+<div class="bg-orb bg-orb-2"></div>
+
+<!-- Auth Card -->
+<div class="auth-card">
+
+  <!-- Logo -->
+  <a class="logo-wrap" href="index.html">
+    <div class="logo-icon">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
+      </svg>
+    </div>
+    <div>
+      <div class="logo-text-top">Universo</div>
+      <div class="logo-text-bottom">Do Carro</div>
+    </div>
+  </a>
+
+  <!-- Tabs -->
+  <div class="tabs-wrapper" id="auth-tabs">
+    <button class="tab-btn tab-active" onclick="toggleAuthMode('login', this)">Entrar</button>
+    <button class="tab-btn" onclick="toggleAuthMode('register', this)">Cadastrar-se</button>
+  </div>
+
+  <!-- Form -->
+  <div class="field-group">
+
+    <!-- Role selector (register only) -->
+    <div id="role-selector" class="role-selector" style="display:none;">
+      <button class="role-btn role-active" id="btn-motorista" onclick="setRole('motorista', this)">Sou Motorista</button>
+      <button class="role-btn" id="btn-empresa" onclick="setRole('empresa', this)">Sou Empresa</button>
+    </div>
+
+    <!-- Nome (register) -->
+    <div class="field-wrap" id="field-name">
+      <span class="field-label">Nome completo / Razão Social</span>
+      <div class="input-wrap">
+        <span class="input-icon material-symbols-outlined">person</span>
+        <input id="name-input" class="field-input" type="text" placeholder="Seu nome ou empresa"/>
+      </div>
+    </div>
+
+    <!-- CNPJ (empresa) -->
+    <div class="field-wrap" id="field-cnpj">
+      <span class="field-label">CNPJ</span>
+      <div class="input-wrap">
+        <span class="input-icon material-symbols-outlined">domain</span>
+        <input id="cnpj-input" class="field-input" type="text" placeholder="00.000.000/0001-00"/>
+      </div>
+    </div>
+
+    <!-- Tipo de empresa (empresa) -->
+    <div class="field-wrap" id="field-tipo-empresa">
+      <span class="field-label">Tipo de negócio</span>
+      <div class="input-wrap">
+        <span class="input-icon material-symbols-outlined">storefront</span>
+        <select id="tipo-empresa-input" class="field-input">
+          <option value="" disabled selected>Qual seu tipo de negócio?</option>
+          <option value="oficina">Oficina Mecânica (Comprador Atacado)</option>
+          <option value="autopecas">Loja de Autopeças (Vendedor)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Cidade (empresa) -->
+    <div class="field-wrap" id="field-cidade">
+      <span class="field-label">Cidade da empresa</span>
+      <div class="input-wrap">
+        <span class="input-icon material-symbols-outlined">location_on</span>
+        <select id="cidade-input" class="field-input">
+          <option value="" disabled selected>Onde sua empresa atua?</option>
+          <option>São José dos Campos, SP</option>
+          <option>São Paulo, SP</option>
+          <option>Rio de Janeiro, RJ</option>
+          <option>Curitiba, PR</option>
+          <option>Belo Horizonte, MG</option>
+          <option>Outra cidade</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Telefone (register) -->
+    <div class="field-wrap" id="field-telefone">
+      <span class="field-label">Telefone / WhatsApp</span>
+      <div class="input-wrap">
+        <span class="input-icon material-symbols-outlined">phone</span>
+        <input id="telefone-input" class="field-input" type="tel" placeholder="(11) 99999-9999"/>
+      </div>
+    </div>
+
+    <!-- E-mail (always) -->
+    <div class="field-always">
+      <span class="field-label">E-mail</span>
+      <div class="input-wrap">
+        <span class="input-icon material-symbols-outlined">mail</span>
+        <input id="email-input" class="field-input" type="email" autocomplete="off" placeholder="seu@email.com" value=""/>
+      </div>
+    </div>
+
+    <!-- Senha (always) -->
+    <div class="field-always">
+      <span class="field-label">Senha</span>
+      <div class="input-wrap">
+        <span class="input-icon material-symbols-outlined">lock</span>
+        <input id="password-input" class="field-input" type="password" autocomplete="new-password" placeholder="Digite sua senha" value="" style="padding-right: 2.75rem;"/>
+        <span class="input-icon-right material-symbols-outlined" onclick="const p=document.getElementById('password-input');p.type=p.type==='password'?'text':'password';this.textContent=p.type==='password'?'visibility':'visibility_off';">visibility</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Promo banner (login only) -->
+  <div id="promo-banner" class="promo-banner">
+    <span class="promo-icon material-symbols-outlined">sell</span>
+    <div>
+      <p class="promo-title">Descontos para Empresas</p>
+      <p class="promo-desc">Use seu <strong style="color:rgba(255,255,255,0.7);">CNPJ</strong> no cadastro para preços exclusivos de revenda.</p>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <button id="main-action-btn" class="btn-primary" onclick="handleLogin()">
+    Entrar na Plataforma
+  </button>
+
+  <!-- Footer links (login only) -->
+  <div id="forgot-pwd" class="auth-footer">
+    <button class="link-subtle" onclick="simularEsqueciSenha()">Esqueceu a senha?</button>
+    <div style="display:flex;align-items:center;gap:0.25rem;">
+      <span class="link-subtle">Novo por aqui?</span>
+      <button class="link-brand" onclick="toggleAuthMode('register', document.querySelectorAll('#auth-tabs .tab-btn')[1])">Criar conta</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Copyright -->
+<p class="copyright">© 2024 Universo do Carro. Todos os direitos reservados.</p>
+
+<script>
+    let currentMode = 'login';
+    let currentRole = 'motorista';
 
     function toggleAuthMode(mode, btn) {
         currentMode = mode;
-        
-        // Update tabs styling
-        const tabs = document.querySelectorAll('#auth-tabs button');
-        tabs.forEach(t => {
-            t.className = "flex flex-col items-center justify-center border-b-[3px] border-transparent text-slate-500 dark:text-slate-400 pb-[13px] pt-4 flex-1";
-        });
-        btn.className = "flex flex-col items-center justify-center border-b-[3px] border-primary text-primary pb-[13px] pt-4 flex-1";
+
+        document.querySelectorAll('#auth-tabs .tab-btn').forEach(t => t.classList.remove('tab-active'));
+        btn.classList.add('tab-active');
 
         const isReg = currentMode === 'register';
 
-        // Visibility Toggles
-        document.getElementById('role-selector').classList.toggle('hidden', !isReg);
-        document.getElementById('role-selector').classList.toggle('flex', isReg);
-        document.getElementById('field-name').classList.toggle('hidden', !isReg);
-        document.getElementById('field-name').classList.toggle('flex', isReg);
-        document.getElementById('field-telefone').classList.toggle('hidden', !isReg);
-        document.getElementById('field-telefone').classList.toggle('flex', isReg);
-        
-        document.getElementById('promo-banner').classList.toggle('hidden', isReg);
-        document.getElementById('promo-banner').classList.toggle('flex', !isReg);
-        document.getElementById('forgot-pwd').classList.toggle('hidden', isReg);
-        document.getElementById('forgot-pwd').classList.toggle('flex', !isReg);
-        
-        document.getElementById('main-action-btn').innerText = isReg ? 'CRIAR MINHA CONTA' : 'ENTRAR NA PLATAFORMA';
-        
+        setVisible('role-selector',  isReg);
+        setVisible('field-name',     isReg);
+        setVisible('field-telefone', isReg);
+        setVisible('promo-banner',   !isReg);
+        setVisible('forgot-pwd',     !isReg);
+
+        document.getElementById('main-action-btn').textContent = isReg ? 'CRIAR MINHA CONTA' : 'ENTRAR NA PLATAFORMA';
+
         updateRoleFields();
     }
 
     function setRole(role, btn) {
         currentRole = role;
-        document.querySelectorAll('#role-selector button').forEach(b => {
-            b.className = 'flex-1 py-2.5 text-sm font-semibold rounded-md text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-all';
-        });
-        btn.className = 'flex-1 py-2.5 text-sm font-bold rounded-md bg-white dark:bg-slate-700 shadow text-primary transition-all';
+        document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('role-active'));
+        btn.classList.add('role-active');
         updateRoleFields();
     }
 
     function updateRoleFields() {
-        const isReg = currentMode === 'register';
-        const isEmp = currentRole === 'empresa';
-        const showEmpresaFields = isReg && isEmp;
-        
-        document.getElementById('field-cnpj').classList.toggle('hidden', !showEmpresaFields);
-        document.getElementById('field-cnpj').classList.toggle('flex', showEmpresaFields);
-        document.getElementById('field-tipo-empresa').classList.toggle('hidden', !showEmpresaFields);
-        document.getElementById('field-tipo-empresa').classList.toggle('flex', showEmpresaFields);
-        document.getElementById('field-cidade').classList.toggle('hidden', !showEmpresaFields);
-        document.getElementById('field-cidade').classList.toggle('flex', showEmpresaFields);
+        const show = currentMode === 'register' && currentRole === 'empresa';
+        setVisible('field-cnpj',         show);
+        setVisible('field-tipo-empresa', show);
+        setVisible('field-cidade',       show);
+    }
+
+    function setVisible(id, visible) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.style.display = visible ? 'flex' : 'none';
     }
 
     async function handleLogin() {
         const email = document.getElementById('email-input').value.trim();
-        const pwd = document.getElementById('password-input').value.trim();
-        
-        if (!email || !pwd) {
-            alert('Por favor, preencha email e senha.');
-            return;
-        }
+        const pwd   = document.getElementById('password-input').value.trim();
+
+        if (!email || !pwd) { alert('Por favor, preencha email e senha.'); return; }
+
+        const btn = document.getElementById('main-action-btn');
+        btn.classList.add('loading');
+        btn.disabled = true;
 
         if (currentMode === 'login') {
             try {
@@ -211,51 +550,40 @@ tailwind.config = { darkMode: "class", theme: { extend: { colors: { "primary": "
                     body: JSON.stringify({ email, password: pwd })
                 });
                 const data = await response.json();
-                
                 if (data.success) {
-                    if (data.user && data.user.id) localStorage.setItem('userId', data.user.id);
+                    if (data.user?.id)    localStorage.setItem('userId',    data.user.id);
                     if (data.access_token) localStorage.setItem('authToken', data.access_token);
-                    const role = (data.user && data.user.role) ? data.user.role : data.role;
-                    if (role === 'admin') {
-                        window.location.href = 'admin.html';
-                    } else if (role === 'empresa') {
-                        window.location.href = 'loja.html';
-                    } else {
-                        window.location.href = 'comprador.html';
-                    }
+                    const role = data.user?.role ?? data.role;
+                    if      (role === 'admin')   window.location.href = 'admin.html';
+                    else if (role === 'empresa') window.location.href = 'loja.html';
+                    else                         window.location.href = 'comprador.html';
                 } else {
                     alert(data.error || 'Erro no login.');
+                    btn.classList.remove('loading'); btn.disabled = false;
                 }
             } catch(e) {
                 alert('Erro de conexão com o servidor.');
+                btn.classList.remove('loading'); btn.disabled = false;
             }
         } else {
-            // Register logic
-            const name = document.getElementById('name-input').value.trim();
-            
-            const payload = {
-                name: name,
-                email: email,
-                password: pwd,
-                role: currentRole,
-                telefone: document.getElementById('telefone-input').value.trim()
-            };
-            if(!payload.telefone) { alert("Telefone/WhatsApp é obrigatório para marketing e contato."); return; }
+            const name     = document.getElementById('name-input').value.trim();
+            const telefone = document.getElementById('telefone-input').value.trim();
+            if (!telefone) { alert('Telefone/WhatsApp é obrigatório.'); btn.classList.remove('loading'); btn.disabled = false; return; }
+
+            const payload = { name, email, password: pwd, role: currentRole, telefone };
 
             if (currentRole === 'empresa') {
-                payload.cnpj = document.getElementById('cnpj-input').value.trim();
-                
-                if (!isCnpjValid(payload.cnpj)) {
-                    alert("Atenção: O CNPJ inserido tem uma formatação inválida/falsa. Corrija para criar sua conta da Loja/Oficina.");
-                    return;
-                }
-
+                payload.cnpj         = document.getElementById('cnpj-input').value.trim();
                 payload.tipo_empresa = document.getElementById('tipo-empresa-input').value;
-                payload.cidade = document.getElementById('cidade-input').value;
+                payload.cidade       = document.getElementById('cidade-input').value;
 
-                if (payload.tipo_empresa === 'autopecas' && (!payload.cidade || payload.cidade === "")) {
-                    alert("Atenção: Você precisa selecionar obrigatoriamente a cidade onde sua autopeças atua.");
-                    return;
+                if (!isCnpjValid(payload.cnpj)) {
+                    alert('CNPJ inválido. Corrija para continuar.');
+                    btn.classList.remove('loading'); btn.disabled = false; return;
+                }
+                if (payload.tipo_empresa === 'autopecas' && !payload.cidade) {
+                    alert('Selecione a cidade onde sua autopeças atua.');
+                    btn.classList.remove('loading'); btn.disabled = false; return;
                 }
             }
 
@@ -266,56 +594,37 @@ tailwind.config = { darkMode: "class", theme: { extend: { colors: { "primary": "
                     body: JSON.stringify(payload)
                 });
                 const data = await response.json();
-
                 if (data.success) {
-                    if (data.user && data.user.id) localStorage.setItem('userId', data.user.id);
-                    if (currentRole === 'empresa') {
-                        window.location.href = 'loja.html';
-                    } else {
-                        window.location.href = 'comprador.html';
-                    }
+                    if (data.user?.id) localStorage.setItem('userId', data.user.id);
+                    window.location.href = currentRole === 'empresa' ? 'loja.html' : 'comprador.html';
                 } else {
-                    alert(data.error + (data.details ? '\nDetalhes: ' + data.details : ''));
+                    alert(data.error + (data.details ? '\n' + data.details : ''));
+                    btn.classList.remove('loading'); btn.disabled = false;
                 }
             } catch(e) {
                 alert('Erro de conexão com o servidor.');
+                btn.classList.remove('loading'); btn.disabled = false;
             }
         }
     }
 
     function isCnpjValid(cnpj) {
         cnpj = cnpj.replace(/[^\d]+/g,'');
-        if (cnpj == '') return false;
-        if (cnpj.length != 14) return false;
-        if (cnpj == "00000000000000" || Math.max(...cnpj.split('').map(Number)) === Math.min(...cnpj.split('').map(Number))) return false;
-        let tamanho = cnpj.length - 2;
-        let numeros = cnpj.substring(0,tamanho);
-        let digitos = cnpj.substring(tamanho);
-        let soma = 0;
-        let pos = tamanho - 7;
-        for (let i = tamanho; i >= 1; i--) {
-            soma += numeros.charAt(tamanho - i) * pos--;
-            if (pos < 2) pos = 9;
-        }
-        let resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-        if (resultado != digitos.charAt(0)) return false;
-        tamanho = tamanho + 1;
-        numeros = cnpj.substring(0,tamanho);
-        soma = 0;
-        pos = tamanho - 7;
-        for (let i = tamanho; i >= 1; i--) {
-            soma += numeros.charAt(tamanho - i) * pos--;
-            if (pos < 2) pos = 9;
-        }
-        resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-        if (resultado != digitos.charAt(1)) return false;
-        return true;
+        if (!cnpj || cnpj.length !== 14) return false;
+        if (/^(\d)\1+$/.test(cnpj)) return false;
+        let t = cnpj.length - 2, n = cnpj.substring(0,t), d = cnpj.substring(t), s = 0, p = t - 7;
+        for (let i = t; i >= 1; i--) { s += n.charAt(t-i) * p--; if (p < 2) p = 9; }
+        let r = s % 11 < 2 ? 0 : 11 - s % 11;
+        if (r != d.charAt(0)) return false;
+        t++; n = cnpj.substring(0,t); s = 0; p = t - 7;
+        for (let i = t; i >= 1; i--) { s += n.charAt(t-i) * p--; if (p < 2) p = 9; }
+        r = s % 11 < 2 ? 0 : 11 - s % 11;
+        return r == d.charAt(1);
     }
 
     async function simularEsqueciSenha() {
-        const emailRec = prompt("Digite seu E-mail de recuperação:");
+        const emailRec = prompt('Digite seu e-mail de recuperação:');
         if (!emailRec) return;
-
         try {
             const r1 = await fetch('/api/forgot-password', {
                 method: 'POST',
@@ -323,49 +632,28 @@ tailwind.config = { darkMode: "class", theme: { extend: { colors: { "primary": "
                 body: JSON.stringify({ email: emailRec })
             });
             const d1 = await r1.json();
-
             if (d1.success) {
-                // Simulando que o usuário "recebeu" o email (neste ambiente de desenvolvimento)
-                const mockDigitado = prompt(`Um link de redefinição FOI ENVIADO para ${emailRec}!\n\n*(MOCK DE DESENVOLVEDOR: O Token que deveria estar no email é [ ${d1.token_mock} ], cole-o abaixo*):`);
-                if (!mockDigitado) return;
-
-                const novaSenha = prompt("Digite sua Nova Senha:");
-                if (!novaSenha) return;
-
-                const r2 = await fetch('/api/reset-password', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: emailRec, token: mockDigitado, newPassword: novaSenha })
-                });
-                const d2 = await r2.json();
-
-                if (d2.success) {
-                    alert('Lindo! Sua nova senha foi definida com segurança. Tente fazer o login.');
-                } else {
-                    alert(d2.error);
-                }
+                alert(`Link de redefinição enviado para ${emailRec}. Verifique seu e-mail.`);
             } else {
-                alert(d1.error || 'Erro.');
+                alert(d1.error || 'Erro ao solicitar redefinição.');
             }
         } catch(e) {
-            alert('Não foi possível comunicar com o backend.');
+            alert('Não foi possível comunicar com o servidor.');
         }
     }
 
-
     document.addEventListener('DOMContentLoaded', () => {
-        // Bloqueia o preenchimento automático do navegador usando JavaScript direto
         setTimeout(() => {
-            document.getElementById('email-input').value = '';
+            document.getElementById('email-input').value    = '';
             document.getElementById('password-input').value = '';
         }, 100);
     });
 </script>
+
 <script>
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js');
-    });
+    window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js'); });
   }
 </script>
-</body></html>
+</body>
+</html>
