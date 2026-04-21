@@ -51,11 +51,11 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc:     ["'self'"],
-            scriptSrc:      ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com"],
-            styleSrc:       ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://fonts.googleapis.com"],
+            scriptSrc:      ["'self'", "'unsafe-inline'"],
+            styleSrc:       ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
             fontSrc:        ["'self'", "https://fonts.gstatic.com", "data:"],
             imgSrc:         ["'self'", "data:", "https://xkiqkzrmavnqchqkyyvw.supabase.co"],
-            connectSrc:     ["'self'", "https://cdn.tailwindcss.com", "https://xkiqkzrmavnqchqkyyvw.supabase.co", "wss://xkiqkzrmavnqchqkyyvw.supabase.co"],
+            connectSrc:     ["'self'", "https://xkiqkzrmavnqchqkyyvw.supabase.co", "wss://xkiqkzrmavnqchqkyyvw.supabase.co"],
             formAction:     ["'self'"],
             frameAncestors: ["'none'"],
             objectSrc:      ["'none'"],
