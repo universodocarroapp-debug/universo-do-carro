@@ -120,6 +120,27 @@ async function requireAdmin(req, res, next) {
     next();
 }
 
+// ---------------------------------------------------------------------------
+// Auditoria — fire-and-forget, nunca bloqueia a resposta principal.
+// Tabela esperada no Supabase:
+//   audit_logs(id, action, admin_id, target_id, target_type, details, ip, created_at)
+// ---------------------------------------------------------------------------
+function auditLog(action, req, { targetId = null, targetType = null, details = {} } = {}) {
+    const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim()
+             || req.socket?.remoteAddress
+             || 'unknown';
+    supabase.from('audit_logs').insert({
+        action,
+        admin_id:    req.user?.id   ?? null,
+        target_id:   targetId,
+        target_type: targetType,
+        details,
+        ip,
+    }).then(({ error }) => {
+        if (error) console.error('[audit_log] Falha ao registrar:', error.message);
+    });
+}
+
 app.post('/api/register', async (req, res) => {
     const { name, email, password, role, cnpj, tipo_empresa, cidade, telefone } = req.body;
     if (!email || !password || !role || !telefone) return res.status(400).json({ error: 'Faltam dados obrigatórios. Telefone é necessário.' });
@@ -173,6 +194,7 @@ app.post('/api/register', async (req, res) => {
             return res.status(500).json({ error: `Erro no Banco: ${profileError.message || JSON.stringify(profileError)}` });
         }
 
+        auditLog('user_created', req, { targetId: userId, targetType: 'user', details: { email, role } });
         res.status(201).json({ success: true, user: { id: userId, role } });
     } catch (e) {
         console.error('>>> ERRO INTERNO NO CADASTRO <<<', e);
@@ -200,7 +222,38 @@ app.get('/api/admin/me', requireAdmin, (req, res) => {
 app.get('/api/users', requireAdmin, async (req, res) => {
     const { data, error } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
     if (error) return res.status(500).json({ error: 'Erro' });
+    auditLog('admin_list_users', req, { targetType: 'user' });
     res.json({ users: data });
+});
+
+app.put('/api/admin/users/:id', requireAdmin, async (req, res) => {
+    const { id } = req.params;
+    const { role, status } = req.body;
+    const allowedRoles = ['motorista', 'empresa', 'admin'];
+    if (role !== undefined && !allowedRoles.includes(role)) {
+        return res.status(400).json({ error: 'Role inválido.' });
+    }
+    const updates = {};
+    if (role   !== undefined) updates.role   = role;
+    if (status !== undefined) updates.status = status;
+    if (Object.keys(updates).length === 0) {
+        return res.status(400).json({ error: 'Nenhum campo para atualizar.' });
+    }
+    const { error } = await supabase.from('profiles').update(updates).eq('id', id);
+    if (error) return res.status(500).json({ error: 'Erro ao atualizar usuário.' });
+    auditLog('user_updated', req, { targetId: id, targetType: 'user', details: updates });
+    res.json({ success: true });
+});
+
+app.delete('/api/admin/users/:id', requireAdmin, async (req, res) => {
+    const { id } = req.params;
+    if (id === req.user.id) {
+        return res.status(400).json({ error: 'Não é possível deletar a própria conta.' });
+    }
+    const { error } = await supabase.auth.admin.deleteUser(id);
+    if (error) return res.status(500).json({ error: 'Erro ao deletar usuário.' });
+    auditLog('user_deleted', req, { targetId: id, targetType: 'user' });
+    res.json({ success: true });
 });
 
 app.post('/api/cotacoes', upload.single('foto'), async (req, res) => {
@@ -270,6 +323,7 @@ app.post('/api/cotacoes/aceitar', requireAuth, async (req, res) => {
     await supabase.from('cotacoes').update({ status: 'Concluído' }).eq('id', cotacao_id);
     const { data, error } = await supabase.from('ofertas').select(`profiles:loja_id (telefone)`).eq('id', oferta_id).single();
     if (error || !data) return res.status(500).json({ error: 'Erro' });
+    auditLog('cotacao_aprovada', req, { targetId: cotacao_id, targetType: 'cotacao', details: { oferta_id } });
     res.json({ success: true, telefone: data.profiles?.telefone });
 });
 
