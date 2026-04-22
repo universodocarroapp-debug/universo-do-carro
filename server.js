@@ -47,6 +47,7 @@ function detectImageMime(buffer) {
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: MAX_FILE_SIZE } });
 const app = express();
+app.set('trust proxy', 1); // Necessário atrás do Traefik: confia no X-Forwarded-For do proxy imediato
 const port = 3000;
 
 app.use(helmet({
