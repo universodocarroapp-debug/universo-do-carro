@@ -463,8 +463,8 @@
 
   </div>
 
-  <!-- Promo banner (login only) -->
-  <div id="promo-banner" class="promo-banner">
+  <!-- Promo banner (login only) — oculto até renderForm() decidir -->
+  <div id="promo-banner" class="promo-banner" style="display:none;">
     <span class="promo-icon material-symbols-outlined">sell</span>
     <div>
       <p class="promo-title">Descontos para Empresas</p>
@@ -477,8 +477,8 @@
     Entrar na Plataforma
   </button>
 
-  <!-- Footer links (login only) -->
-  <div id="forgot-pwd" class="auth-footer">
+  <!-- Footer links (login only) — oculto até renderForm() decidir -->
+  <div id="forgot-pwd" class="auth-footer" style="display:none;">
     <button id="btn-esqueci-senha" class="link-subtle">Esqueceu a senha?</button>
     <div style="display:flex;align-items:center;gap:0.25rem;">
       <span class="link-subtle">Novo por aqui?</span>
@@ -492,219 +492,276 @@
 <p class="copyright">© 2024 Universo do Carro. Todos os direitos reservados.</p>
 
 <script>
-    let currentMode = 'login';
-    let currentRole = 'motorista';
+    // ─── Estado global ─────────────────────────────────────────────────────
+    let currentMode = 'login';    // 'login' | 'register'
+    let currentRole = 'motorista'; // 'motorista' | 'empresa'
 
+    // ─── Utilitário de visibilidade ────────────────────────────────────────
+    // Sempre usa display explícito para evitar conflito com CSS defaults.
+    function vis(id, show) {
+        const el = document.getElementById(id);
+        if (el) el.style.display = show ? 'flex' : 'none';
+    }
+
+    // ─── Única função de renderização — chamada sempre que mode ou role muda.
+    // Regras de visibilidade por aba:
+    //
+    //   LOGIN    → email, senha, promo-banner, link esqueceu/criar conta
+    //   MOTORISTA → role-selector, nome, telefone, email, senha, confirmar-senha
+    //   EMPRESA  → role-selector, nome, CNPJ, tipo, cidade, telefone, email, senha, confirmar-senha
+    // ──────────────────────────────────────────────────────────────────────
+    function renderForm() {
+        const reg     = currentMode === 'register';
+        const empresa = reg && currentRole === 'empresa';
+
+        // ── Abas de navegação
+        document.getElementById('tab-login')    .classList.toggle('tab-active', !reg);
+        document.getElementById('tab-cadastrar').classList.toggle('tab-active',  reg);
+
+        // ── Selector Motorista / Empresa (só no cadastro)
+        vis('role-selector', reg);
+        document.getElementById('btn-motorista').classList.toggle('role-active', reg && currentRole === 'motorista');
+        document.getElementById('btn-empresa')  .classList.toggle('role-active', reg && currentRole === 'empresa');
+
+        // ── Campos comuns ao cadastro (ambas as roles)
+        vis('field-name',             reg);
+        vis('field-telefone',         reg);
+        vis('field-confirm-password', reg);
+
+        // ── Campos exclusivos de empresa
+        vis('field-cnpj',         empresa);
+        vis('field-tipo-empresa', empresa);
+        vis('field-cidade',       empresa);
+
+        // ── Elementos exclusivos do login
+        vis('promo-banner', !reg);
+        vis('forgot-pwd',   !reg);
+
+        // ── Texto do botão
+        document.getElementById('main-action-btn').textContent =
+            reg ? 'CRIAR MINHA CONTA' : 'ENTRAR NA PLATAFORMA';
+    }
+
+    // ─── Alternância de abas ───────────────────────────────────────────────
     function switchTab(mode) {
-        toggleAuthMode(mode);
-    }
-
-    function toggleAuthMode(mode) {
         currentMode = mode;
-        const isReg = mode === 'register';
-
-        // Atualiza visual das abas
-        document.getElementById('tab-login').classList.toggle('tab-active', !isReg);
-        document.getElementById('tab-cadastrar').classList.toggle('tab-active', isReg);
-
-        // Mostra/oculta campos
-        setVisible('role-selector',         isReg);
-        setVisible('field-name',            isReg);
-        setVisible('field-telefone',        isReg);
-        setVisible('field-confirm-password',isReg);
-        setVisible('promo-banner',          !isReg);
-        setVisible('forgot-pwd',            !isReg);
-
-        document.getElementById('main-action-btn').textContent = isReg ? 'CRIAR MINHA CONTA' : 'ENTRAR NA PLATAFORMA';
-
-        updateRoleFields();
+        renderForm();
+        // Limpa mensagens de erro se houver
+        document.getElementById('email-input').style.borderColor = '';
+        document.getElementById('password-input').style.borderColor = '';
     }
 
+    // ─── Seleção de role (Motorista / Empresa) ─────────────────────────────
+    function selectRole(role) {
+        currentRole = role;
+        renderForm();
+    }
+
+    // ─── Toggle senha visível/oculta ───────────────────────────────────────
     function togglePasswordVisibility(inputId, btn) {
-        const input = document.getElementById(inputId);
+        const input    = document.getElementById(inputId);
         const isHidden = input.type === 'password';
         input.type = isHidden ? 'text' : 'password';
-        // Troca SVG: olho aberto ↔ olho fechado
         btn.querySelector('svg').innerHTML = isHidden
             ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
             : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
     }
 
-    function setRole(role, btn) {
-        currentRole = role;
-        document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('role-active'));
-        btn.classList.add('role-active');
-        updateRoleFields();
+    // ─── Máscara de CNPJ ──────────────────────────────────────────────────
+    function maskCnpj(e) {
+        let v = e.target.value.replace(/\D/g, '').slice(0, 14);
+        if (v.length > 12)      v = v.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{0,2}).*/, '$1.$2.$3/$4-$5');
+        else if (v.length > 8)  v = v.replace(/^(\d{2})(\d{3})(\d{3})(\d{0,4}).*/, '$1.$2.$3/$4');
+        else if (v.length > 5)  v = v.replace(/^(\d{2})(\d{3})(\d{0,3}).*/, '$1.$2.$3');
+        else if (v.length > 2)  v = v.replace(/^(\d{2})(\d{0,3}).*/, '$1.$2');
+        e.target.value = v;
     }
 
-    function updateRoleFields() {
-        const show = currentMode === 'register' && currentRole === 'empresa';
-        setVisible('field-cnpj',         show);
-        setVisible('field-tipo-empresa', show);
-        setVisible('field-cidade',       show);
-    }
-
-    function setVisible(id, visible) {
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.style.display = visible ? 'flex' : 'none';
-    }
-
-    async function handleLogin() {
-        const email = document.getElementById('email-input').value.trim();
-        const pwd   = document.getElementById('password-input').value.trim();
-
-        if (!email || !pwd) { alert('Por favor, preencha email e senha.'); return; }
-
-        const btn = document.getElementById('main-action-btn');
-        btn.classList.add('loading');
-        btn.disabled = true;
-
-        if (currentMode === 'login') {
-            try {
-                const response = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password: pwd })
-                });
-                const data = await response.json();
-                if (data.success) {
-                    if (data.user?.id)    localStorage.setItem('userId',    data.user.id);
-                    if (data.access_token) localStorage.setItem('authToken', data.access_token);
-                    const role = data.user?.role ?? data.role;
-                    if      (role === 'admin')   window.location.href = 'admin.html';
-                    else if (role === 'empresa') window.location.href = 'loja.html';
-                    else                         window.location.href = 'comprador.html';
-                } else {
-                    alert(data.error || 'Erro no login.');
-                    btn.classList.remove('loading'); btn.disabled = false;
-                }
-            } catch(e) {
-                alert('Erro de conexão com o servidor.');
-                btn.classList.remove('loading'); btn.disabled = false;
-            }
-        } else {
-            const name     = document.getElementById('name-input').value.trim();
-            const telefone = document.getElementById('telefone-input').value.trim();
-            const confirmPwd = document.getElementById('confirm-password-input').value.trim();
-            if (!telefone) { alert('Telefone/WhatsApp é obrigatório.'); btn.classList.remove('loading'); btn.disabled = false; return; }
-            if (pwd !== confirmPwd) { alert('As senhas não coincidem. Verifique e tente novamente.'); btn.classList.remove('loading'); btn.disabled = false; return; }
-
-            const payload = { name, email, password: pwd, role: currentRole, telefone };
-
-            if (currentRole === 'empresa') {
-                payload.cnpj         = document.getElementById('cnpj-input').value.trim();
-                payload.tipo_empresa = document.getElementById('tipo-empresa-input').value;
-                payload.cidade       = document.getElementById('cidade-input').value;
-
-                if (!isCnpjValid(payload.cnpj)) {
-                    alert('CNPJ inválido. Corrija para continuar.');
-                    btn.classList.remove('loading'); btn.disabled = false; return;
-                }
-                if (payload.tipo_empresa === 'autopecas' && !payload.cidade) {
-                    alert('Selecione a cidade onde sua autopeças atua.');
-                    btn.classList.remove('loading'); btn.disabled = false; return;
-                }
-            }
-
-            try {
-                const response = await fetch('/api/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const data = await response.json();
-                if (data.success) {
-                    // Cadastro OK — agora faz login para obter o authToken necessário
-                    // nos endpoints autenticados (/api/cotacoes/aceitar, /api/ofertas)
-                    try {
-                        const loginRes  = await fetch('/api/login', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ email, password: pwd })
-                        });
-                        const loginData = await loginRes.json();
-                        if (loginData.success) {
-                            if (loginData.user?.id)     localStorage.setItem('userId',    loginData.user.id);
-                            if (loginData.access_token) localStorage.setItem('authToken', loginData.access_token);
-                        } else {
-                            // Login automático falhou — salva apenas o userId do registro
-                            if (data.user?.id) localStorage.setItem('userId', data.user.id);
-                        }
-                    } catch (_) {
-                        if (data.user?.id) localStorage.setItem('userId', data.user.id);
-                    }
-                    window.location.href = currentRole === 'empresa' ? 'loja.html' : 'comprador.html';
-                } else {
-                    alert(data.error + (data.details ? '\n' + data.details : ''));
-                    btn.classList.remove('loading'); btn.disabled = false;
-                }
-            } catch(e) {
-                alert('Erro de conexão com o servidor.');
-                btn.classList.remove('loading'); btn.disabled = false;
-            }
-        }
-    }
-
+    // ─── Validação de CNPJ ────────────────────────────────────────────────
     function isCnpjValid(cnpj) {
-        cnpj = cnpj.replace(/[^\d]+/g,'');
+        cnpj = cnpj.replace(/\D/g, '');
         if (!cnpj || cnpj.length !== 14) return false;
         if (/^(\d)\1+$/.test(cnpj)) return false;
-        let t = cnpj.length - 2, n = cnpj.substring(0,t), d = cnpj.substring(t), s = 0, p = t - 7;
-        for (let i = t; i >= 1; i--) { s += n.charAt(t-i) * p--; if (p < 2) p = 9; }
+        let t = cnpj.length - 2, n = cnpj.substring(0, t), d = cnpj.substring(t), s = 0, p = t - 7;
+        for (let i = t; i >= 1; i--) { s += n.charAt(t - i) * p--; if (p < 2) p = 9; }
         let r = s % 11 < 2 ? 0 : 11 - s % 11;
         if (r != d.charAt(0)) return false;
-        t++; n = cnpj.substring(0,t); s = 0; p = t - 7;
-        for (let i = t; i >= 1; i--) { s += n.charAt(t-i) * p--; if (p < 2) p = 9; }
+        t++; n = cnpj.substring(0, t); s = 0; p = t - 7;
+        for (let i = t; i >= 1; i--) { s += n.charAt(t - i) * p--; if (p < 2) p = 9; }
         r = s % 11 < 2 ? 0 : 11 - s % 11;
         return r == d.charAt(1);
     }
 
+    // ─── Helpers de loading no botão ─────────────────────────────────────
+    function btnLoading(on) {
+        const btn = document.getElementById('main-action-btn');
+        btn.disabled = on;
+        btn.classList.toggle('loading', on);
+    }
+
+    // ─── SUBMIT: Login ────────────────────────────────────────────────────
+    async function doLogin(email, pwd) {
+        try {
+            const res  = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password: pwd })
+            });
+            const data = await res.json();
+            if (data.success) {
+                if (data.user?.id)     localStorage.setItem('userId',    data.user.id);
+                if (data.access_token) localStorage.setItem('authToken', data.access_token);
+                const role = data.user?.role ?? data.role;
+                if      (role === 'admin')   window.location.href = 'admin.html';
+                else if (role === 'empresa') window.location.href = 'loja.html';
+                else                         window.location.href = 'comprador.html';
+            } else {
+                alert(data.error || 'E-mail ou senha incorretos.');
+                btnLoading(false);
+            }
+        } catch (e) {
+            alert('Erro de conexão com o servidor.');
+            btnLoading(false);
+        }
+    }
+
+    // ─── SUBMIT: Cadastro ─────────────────────────────────────────────────
+    async function doRegister(email, pwd) {
+        const name       = document.getElementById('name-input').value.trim();
+        const telefone   = document.getElementById('telefone-input').value.trim();
+        const confirmPwd = document.getElementById('confirm-password-input').value.trim();
+
+        // Validações comuns
+        if (!name)     { alert('Informe seu nome ou razão social.');              btnLoading(false); return; }
+        if (!telefone) { alert('Informe o telefone/WhatsApp.');                   btnLoading(false); return; }
+        if (!confirmPwd) { alert('Repita sua senha no campo "Confirmar senha".'); btnLoading(false); return; }
+        if (pwd !== confirmPwd) { alert('As senhas não coincidem. Tente novamente.'); btnLoading(false); return; }
+        if (pwd.length < 6) { alert('A senha precisa ter pelo menos 6 caracteres.'); btnLoading(false); return; }
+
+        const payload = { name, email, password: pwd, role: currentRole, telefone };
+
+        // Validações e campos exclusivos de empresa
+        if (currentRole === 'empresa') {
+            const cnpj        = document.getElementById('cnpj-input').value.trim();
+            const tipoEmpresa = document.getElementById('tipo-empresa-input').value;
+            const cidade      = document.getElementById('cidade-input').value;
+
+            if (!cnpj) { alert('Informe o CNPJ da empresa.'); btnLoading(false); return; }
+            if (!isCnpjValid(cnpj)) { alert('CNPJ inválido. Verifique os dígitos e tente novamente.'); btnLoading(false); return; }
+            if (!tipoEmpresa) { alert('Selecione o tipo de negócio (Autopeças ou Oficina).'); btnLoading(false); return; }
+            if (!cidade) { alert('Selecione a cidade onde sua empresa atua.'); btnLoading(false); return; }
+
+            payload.cnpj         = cnpj;
+            payload.tipo_empresa = tipoEmpresa;
+            payload.cidade       = cidade;
+        }
+
+        try {
+            const res  = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+
+            if (!data.success) {
+                alert(data.error + (data.details ? '\n' + data.details : ''));
+                btnLoading(false);
+                return;
+            }
+
+            // Cadastro OK — faz login automático para obter o authToken
+            try {
+                const loginRes  = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password: pwd })
+                });
+                const loginData = await loginRes.json();
+                if (loginData.success) {
+                    if (loginData.user?.id)     localStorage.setItem('userId',    loginData.user.id);
+                    if (loginData.access_token) localStorage.setItem('authToken', loginData.access_token);
+                } else {
+                    if (data.user?.id) localStorage.setItem('userId', data.user.id);
+                }
+            } catch (_) {
+                if (data.user?.id) localStorage.setItem('userId', data.user.id);
+            }
+
+            window.location.href = currentRole === 'empresa' ? 'loja.html' : 'comprador.html';
+
+        } catch (e) {
+            alert('Erro de conexão com o servidor.');
+            btnLoading(false);
+        }
+    }
+
+    // ─── Handler principal do botão ────────────────────────────────────────
+    async function handleMainAction() {
+        const email = document.getElementById('email-input').value.trim();
+        const pwd   = document.getElementById('password-input').value.trim();
+
+        if (!email) { alert('Informe seu e-mail.'); return; }
+        if (!pwd)   { alert('Informe sua senha.');  return; }
+
+        btnLoading(true);
+
+        if (currentMode === 'login') {
+            await doLogin(email, pwd);
+        } else {
+            await doRegister(email, pwd);
+        }
+    }
+
+    // ─── Esqueci minha senha ───────────────────────────────────────────────
     async function simularEsqueciSenha() {
-        const emailRec = prompt('Digite seu e-mail de recuperação:');
+        const emailRec = prompt('Digite seu e-mail para recuperação de senha:');
         if (!emailRec) return;
         try {
-            const r1 = await fetch('/api/forgot-password', {
+            const res  = await fetch('/api/forgot-password', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: emailRec })
             });
-            const d1 = await r1.json();
-            if (d1.success) {
-                alert(`Link de redefinição enviado para ${emailRec}. Verifique seu e-mail.`);
-            } else {
-                alert(d1.error || 'Erro ao solicitar redefinição.');
-            }
-        } catch(e) {
+            const data = await res.json();
+            if (data.success) alert(`Link de redefinição enviado para ${emailRec}. Verifique sua caixa de entrada.`);
+            else               alert(data.error || 'Erro ao solicitar redefinição.');
+        } catch (e) {
             alert('Não foi possível comunicar com o servidor.');
         }
     }
 
+    // ─── Inicialização ────────────────────────────────────────────────────
     document.addEventListener('DOMContentLoaded', () => {
-        // Tabs
-        document.getElementById('tab-login').addEventListener('click', () => switchTab('login'));
+        // Renderiza o estado inicial (login)
+        renderForm();
+
+        // Abas Entrar / Cadastrar-se
+        document.getElementById('tab-login')    .addEventListener('click', () => switchTab('login'));
         document.getElementById('tab-cadastrar').addEventListener('click', () => switchTab('register'));
 
-        // Role selector
-        document.getElementById('btn-motorista').addEventListener('click', (e) => setRole('motorista', e.currentTarget));
-        document.getElementById('btn-empresa').addEventListener('click', (e) => setRole('empresa', e.currentTarget));
+        // Role selector: Motorista / Empresa
+        document.getElementById('btn-motorista').addEventListener('click', () => selectRole('motorista'));
+        document.getElementById('btn-empresa')  .addEventListener('click', () => selectRole('empresa'));
 
-        // Password toggles
+        // Máscara CNPJ
+        document.getElementById('cnpj-input').addEventListener('input', maskCnpj);
+
+        // Toggle visibilidade das senhas
         document.querySelectorAll('.pwd-toggle').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const targetId = e.currentTarget.dataset.target;
-                togglePasswordVisibility(targetId, e.currentTarget);
+            btn.addEventListener('click', () => {
+                togglePasswordVisibility(btn.dataset.target, btn);
             });
         });
 
-        // Ação principal (login ou cadastro)
-        document.getElementById('main-action-btn').addEventListener('click', handleLogin);
+        // Botão principal
+        document.getElementById('main-action-btn').addEventListener('click', handleMainAction);
 
         // Rodapé
         document.getElementById('btn-esqueci-senha').addEventListener('click', simularEsqueciSenha);
-        document.getElementById('btn-criar-conta').addEventListener('click', () => switchTab('register'));
+        document.getElementById('btn-criar-conta')  .addEventListener('click', () => switchTab('register'));
 
-        // Limpa campos para evitar autocomplete
+        // Limpa campos (evita preenchimento automático indevido)
         setTimeout(() => {
             document.getElementById('email-input').value    = '';
             document.getElementById('password-input').value = '';
