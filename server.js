@@ -124,15 +124,12 @@ async function requireAdmin(req, res, next) {
 }
 
 // ---------------------------------------------------------------------------
-// Webhook N8N — fire-and-forget, nunca bloqueia a resposta principal.
-// Envia os dados da cotação + lista de autopeças na mesma cidade para o N8N,
-// que por sua vez usa o Z-API para disparar WhatsApp para cada loja.
+// Webhook helpers — fire-and-forget, nunca bloqueiam a resposta principal.
 // ---------------------------------------------------------------------------
-function notifyN8n(cotacao, lojas) {
-    const webhookUrl = process.env.N8N_WEBHOOK_URL;
-    if (!webhookUrl) return; // N8N_WEBHOOK_URL não configurado — silenciosamente ignorado
+function postWebhook(webhookUrl, payload) {
+    if (!webhookUrl) return;
     try {
-        const payload = JSON.stringify({ cotacao, lojas });
+        const body = JSON.stringify(payload);
         const url = new URL(webhookUrl);
         const isHttps = url.protocol === 'https:';
         const lib = isHttps ? https : http;
@@ -143,18 +140,28 @@ function notifyN8n(cotacao, lojas) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Content-Length': Buffer.byteLength(payload)
+                'Content-Length': Buffer.byteLength(body)
             }
         };
         const req = lib.request(options, r => {
-            console.log(`[n8n] webhook respondeu HTTP ${r.statusCode}`);
+            console.log(`[webhook] ${url.pathname} respondeu HTTP ${r.statusCode}`);
         });
-        req.on('error', e => console.error('[n8n] webhook error:', e.message));
-        req.write(payload);
+        req.on('error', e => console.error(`[webhook] ${url.pathname} error:`, e.message));
+        req.write(body);
         req.end();
     } catch (e) {
-        console.error('[n8n] erro ao preparar webhook:', e.message);
+        console.error('[webhook] erro ao preparar:', e.message);
     }
+}
+
+// Notifica autopeças da cidade quando uma cotação é criada (N8N_WEBHOOK_URL)
+function notifyN8n(cotacao, lojas) {
+    postWebhook(process.env.N8N_WEBHOOK_URL, { cotacao, lojas });
+}
+
+// Notifica motorista quando uma oferta é recebida (N8N_WEBHOOK_OFERTA_URL)
+function notifyN8nOferta(payload) {
+    postWebhook(process.env.N8N_WEBHOOK_OFERTA_URL, payload);
 }
 
 // ---------------------------------------------------------------------------
@@ -371,6 +378,42 @@ app.post('/api/ofertas', requireAuth, async (req, res) => {
     }
     const { data, error } = await supabase.from('ofertas').insert([{ cotacao_id, loja_id, valor, mensagem, garantia, peca_tipo }]).select();
     if (error) return res.status(500).json({ error: 'Erro' });
+
+    // Notifica motorista sobre a oferta recebida via N8N (fire-and-forget)
+    ;(async () => {
+        try {
+            const { data: cot } = await supabase
+                .from('cotacoes')
+                .select('user_id, peca, marca, modelo')
+                .eq('id', cotacao_id)
+                .single();
+            if (!cot) return;
+
+            const [{ data: motorista }, { data: loja }] = await Promise.all([
+                supabase.from('profiles').select('name, telefone').eq('id', cot.user_id).single(),
+                supabase.from('profiles').select('name').eq('id', loja_id).single()
+            ]);
+
+            notifyN8nOferta({
+                tipo: 'oferta_recebida',
+                motorista: {
+                    nome:     motorista?.name     ?? '',
+                    telefone: motorista?.telefone ?? ''
+                },
+                oferta: {
+                    preco:     valor,
+                    loja_nome: loja?.name    ?? '',
+                    peca:      cot.peca      ?? '',
+                    marca:     cot.marca     ?? '',
+                    modelo:    cot.modelo    ?? ''
+                }
+            });
+            console.log(`[n8n] oferta_recebida disparada para motorista ${cot.user_id}`);
+        } catch (e) {
+            console.error('[n8n] erro ao disparar oferta_recebida:', e.message);
+        }
+    })();
+
     res.json({ success: true, oferta_id: data[0].id });
 });
 
